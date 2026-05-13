@@ -5,19 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOGDANEWS</title>
 
-    <!-- ПОДТВЕРЖДЕНИЕ ГУГЛ -->
     <meta name="google-site-verification" content="ii3A3TpdlwaiuA9tNgDsQ4Ld_0HsKZJVB_KH6YPKzIk" />
-    
-    <!-- ИКОНКИ -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
-
-    <!-- SEO -->
-    <meta name="description" content="Официальный сайт BOGDANEWS. Актуальные новости, курьезные происшествия, биржа BOGDAN и финансовая сводка.">
-    <meta name="keywords" content="bogdanews, богданьюс, богдан ньюс, новости богдан, bublebu github">
-    <meta property="og:title" content="BOGDANEWS — ИНФОРМАЦИОННОЕ АГЕНТСТВО">
-    <meta property="og:description" content="Главный источник новостей в 2026 году.">
-    <meta property="og:type" content="website">
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -26,7 +16,6 @@
             --main-bg: #f4f1ea; 
             --text-dark: #1a1a1a; 
             --accent-red: #c00; 
-            --border-gray: #333; 
             --secondary-text: #444; 
         }
         
@@ -41,22 +30,19 @@
         .news-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; line-height: 1.1; margin: 10px 0; font-weight: 700; }
         .news-content { column-count: 2; column-gap: 20px; text-align: justify; font-size: 1rem; color: #222; }
 
-        /* КНОПКИ РЕАКЦИЙ */
         .reactions { margin-top: 15px; display: flex; gap: 15px; align-items: center; }
-        .react-btn { background: none; border: 1px solid var(--text-dark); cursor: pointer; padding: 5px 10px; font-weight: bold; font-family: 'Roboto', sans-serif; }
+        .react-btn { background: #fff; border: 1px solid var(--text-dark); cursor: pointer; padding: 5px 12px; font-weight: bold; transition: 0.2s; }
         .react-btn:hover { background: var(--text-dark); color: #fff; }
-        .stat-view { font-size: 0.8rem; color: #666; font-weight: bold; }
+        .stat-view { font-size: 0.9rem; color: #666; font-weight: bold; font-family: monospace; }
 
         aside { border-left: 2px solid var(--text-dark); padding-left: 25px; }
         .sidebar-box { background: #fff; border: 1px solid var(--text-dark); padding: 15px; margin-bottom: 20px; box-shadow: 5px 5px 0px var(--text-dark); }
         .sidebar-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; border-bottom: 3px solid var(--accent-red); padding-bottom: 5px; margin: 0 0 15px 0; text-transform: uppercase; }
         .exchange-rate { font-family: monospace; font-size: 1.2rem; font-weight: bold; color: var(--accent-red); text-align: center; display: block; padding: 10px; border: 1px dashed #ccc; }
-        .staff-list { font-size: 0.8rem; list-style: none; padding: 0; margin: 0; }
-        .staff-list li { margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
-
+        
         @media (max-width: 900px) {
             main { grid-template-columns: 1fr; }
-            aside { border-left: none; padding-left: 0; border-top: 2px solid var(--text-dark); padding-top: 20px; }
+            aside { border-left: none; padding-top: 20px; border-top: 2px solid var(--text-dark); }
             .news-content { column-count: 1; }
         }
     </style>
@@ -72,74 +58,71 @@
     </header>
     
     <main>
-        <section id="news-container">ОЖИДАНИЕ СВОДКИ...</section>
+        <section id="news-container">ЗАГРУЗКА ДАННЫХ...</section>
         
         <aside>
             <div class="sidebar-box">
                 <h3 class="sidebar-title">БИРЖА BOGDAN</h3>
                 <div class="exchange-rate" id="exchange-val">1 RUB = 0.00 USD</div>
             </div>
-
             <div class="sidebar-box">
                 <h3 class="sidebar-title">РЕДАКЦИЯ</h3>
-                <ul class="staff-list">
-                    <li><strong>ГЛАВНЫЙ РЕДАКТОР:</strong> БОГДАН</li>
-                    <li><strong>РАЗРАБОТКА:</strong> БОГДАН</li>
-                    <li><strong>ТЕХПОДДЕРЖКА:</strong> АРТЕМА НЕТ</li>
-                </ul>
+                <div style="font-size: 0.8rem;">
+                    <strong>ГЛАВНЫЙ:</strong> БОГДАН<br>
+                    <strong>АРТЕМА:</strong> НЕТ
+                </div>
             </div>
-            
-            <div class="sidebar-box" style="font-size: 0.8rem;">
-                <strong>РЕКЛАМА:</strong> <a href="https://t.me/eblantale" style="color: var(--accent-red); text-decoration: none; font-weight: bold;">EBLANTALE</a> — САМАЯ ОЖИДАЕМАЯ ИГРА ГОДА.
+            <div class="sidebar-box">
+                <strong>РЕКЛАМА:</strong> <a href="https://t.me/eblantale" style="color: var(--accent-red); text-decoration: none;">EBLANTALE</a>
             </div>
         </aside>
     </main>
 
-    <footer style="background: #f9f9f9; border-top: 1px solid #ccc; padding: 30px 0; text-align: center; font-size: 0.8rem; color: #666; margin-top: 50px;">
-        <p style="font-weight: bold; margin: 0; color: #1a1a1a;">© 2026 Информационное агентство BOGDANEWS. Все права защищены.</p>
-        <p style="font-size: 0.7rem; max-width: 600px; margin: 10px auto 0 auto; line-height: 1.4; color: #999;">
-            Материалы носят исключительно развлекательный характер. Все совпадения случайны. Свидетельство о регистрации: B-001-2026.
-        </p>
-    </footer>
-
     <script>
-        var SUPABASE_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
-        var SUPABASE_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
-        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function updateReaction(id, column, current) {
-            const { error } = await supabase.from('news').update({ [column]: (current || 0) + 1 }).eq('id', id);
-            if (!error) getNews();
+        async function updateStat(id, type, current) {
+            const newVal = (parseInt(current) || 0) + 1;
+            const { error } = await supabase.from('news').update({ [type]: newVal }).eq('id', id);
+            if (!error) getNews(false); // Обновляем без накрутки просмотра
         }
 
-        async function getNews() {
-            var { data, error } = await supabase.from('news').select('*').order('id', { ascending: false });
-            var container = document.getElementById('news-container');
-            if (error) { container.innerHTML = "ОШИБКА: " + error.message; return; }
-            
+        async function getNews(isInitialLoad = true) {
+            const { data, error } = await supabase.from('news').select('*').order('id', { ascending: false });
+            const container = document.getElementById('news-container');
+            if (error) return;
+
             container.innerHTML = data.map((n, i) => `
                 <article class="news-article">
-                    <span class="category">${i === 0 ? 'ГЛАВНАЯ ТЕМА' : 'ИНСАЙД'}</span>
+                    <span class="category">${i === 0 ? 'ГЛАВНОЕ' : 'ИНСАЙД'}</span>
                     <h2 class="news-title">${n.title || 'БЕЗ НАЗВАНИЯ'}</h2>
-                    <div class="news-meta">2026 // BOGDAN REPORT</div>
-                    <div class="news-content">${n.content || 'ИНФОРМАЦИЯ УДАЛЕНА ЦЕНЗУРОЙ.'}</div>
+                    <div class="news-content">${n.content || '...'}</div>
                     <div class="reactions">
                         <span class="stat-view">👁 ${n.views || 0}</span>
-                        <button class="react-btn" onclick="updateReaction(${n.id}, 'likes', ${n.likes})">👍 ${n.likes || 0}</button>
-                        <button class="react-btn" onclick="updateReaction(${n.id}, 'dislikes', ${n.dislikes})">👎 ${n.dislikes || 0}</button>
+                        <button class="react-btn" onclick="updateStat(${n.id}, 'likes', ${n.likes || 0})">👍 ${n.likes || 0}</button>
+                        <button class="react-btn" onclick="updateReaction(${n.id}, 'dislikes', ${n.dislikes || 0})">👎 ${n.dislikes || 0}</button>
                     </div>
                 </article>
             `).join('');
 
-            // Авто-просмотр
-            data.forEach(async (n) => {
-                await supabase.from('news').update({ views: (n.views || 0) + 1 }).eq('id', n.id);
-            });
+            if (isInitialLoad) {
+                data.forEach(async (n) => {
+                    const viewed = localStorage.getItem('v_' + n.id);
+                    if (!viewed) {
+                        await supabase.from('news').update({ views: (n.views || 0) + 1 }).eq('id', n.id);
+                        localStorage.setItem('v_' + n.id, '1');
+                    }
+                });
+            }
         }
 
+        // ДУБЛИРУЮ ФУНКЦИЮ ДЛЯ ДИЗЛАЙКА (ЧТОБЫ В ОНЧЛИКЕ НЕ ПУТАТЬСЯ)
+        window.updateReaction = updateStat;
+
         function updateExchange() {
-            const val = (Math.random() * (1000 - 1) + 1).toFixed(2);
-            document.getElementById('exchange-val').innerText = `1 РУБЛЬ = ${val} $`;
+            document.getElementById('exchange-val').innerText = `1 РУБЛЬ = ${(Math.random() * 500).toFixed(2)} $`;
         }
 
         document.getElementById('live-date').innerText = new Date().toLocaleDateString('ru-RU').toUpperCase();
