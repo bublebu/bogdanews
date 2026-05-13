@@ -104,7 +104,7 @@
                 <div id="suggest-form">
                     <input type="text" id="prop-title" class="prop-input" placeholder="ЗАГОЛОВОК">
                     <textarea id="prop-text" class="prop-area" placeholder="ЧТО СЛУЧИЛОСЬ?"></textarea>
-                    <button class="auth-btn login-btn" onclick="window.sendToTelegram()" style="font-size: 0.7rem;">ОТПРАВИТЬ БОГДАНУ</button>
+                    <button class="auth-btn login-btn" id="btn-send-tg" style="font-size: 0.7rem;">ОТПРАВИТЬ БОГДАНУ</button>
                 </div>
             </div>
 
@@ -130,7 +130,8 @@
 
         let currentUser = null;
 
-        window.sendToTelegram = async () => {
+        // Отправка данных
+        async function sendToTelegram() {
             if (!currentUser) {
                 alert("КТО ВЫ? СНАЧАЛА АВТОРИЗУЙТЕСЬ.");
                 return;
@@ -145,7 +146,7 @@
             }
 
             try {
-                const { error } = await sbClient
+                const { error, status } = await sbClient
                     .from('suggestions')
                     .insert([{ 
                         title: title, 
@@ -153,30 +154,31 @@
                         author_email: currentUser.email 
                     }]);
 
-                if (!error) {
+                if (error) {
+                    console.error("Ошибка Supabase:", error);
+                    alert(`ОШИБКА ${status}: ${error.message}\nПроверьте, создана ли таблица.`);
+                } else {
                     alert("ПРИНЯТО! ПРОВЕРЯЙ ТЕЛЕГРАМ.");
                     document.getElementById('prop-title').value = '';
                     document.getElementById('prop-text').value = '';
-                } else {
-                    // Если триггер вернул NULL (из-за бана), это может вызвать ошибку
-                    alert("ОШИБКА: ДОСТУП ОГРАНИЧЕН ИЛИ СБОЙ БАЗЫ.");
                 }
             } catch (err) {
-                alert("ОШИБКА ПОДКЛЮЧЕНИЯ.");
+                console.error("Критическая ошибка:", err);
+                alert("СБОЙ ПОДКЛЮЧЕНИЯ.");
             }
-        };
+        }
 
-        window.signInWithGoogle = async () => {
+        async function signInWithGoogle() {
             await sbClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: { redirectTo: window.location.origin + window.location.pathname }
             });
-        };
+        }
 
-        window.signOut = async () => {
+        async function signOut() {
             await sbClient.auth.signOut();
             location.reload();
-        };
+        }
 
         window.handleReaction = async (id, field, current) => {
             if (!currentUser) { alert("НУЖНА РЕГИСТРАЦИЯ."); return; }
@@ -186,7 +188,7 @@
             const { error } = await sbClient.from('news').update({ [field]: (Number(current) || 0) + 1 }).eq('id', id);
             if (!error) {
                 localStorage.setItem(key, 'true');
-                await loadNews(false); 
+                await loadNews(); 
             }
         };
 
@@ -200,7 +202,7 @@
             }
         }
 
-        async function loadNews(countView = true) {
+        async function loadNews() {
             const { data, error } = await sbClient.from('news').select('*').order('id', { ascending: false });
             const container = document.getElementById('news-container');
             if (error) return;
@@ -221,18 +223,23 @@
             `).join('');
         }
 
-        document.getElementById('btn-login').onclick = window.signInWithGoogle;
-        document.getElementById('btn-logout').onclick = window.signOut;
-        document.getElementById('live-date').innerText = new Date().toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+        // Инициализация при полной загрузке страницы
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('btn-login').onclick = signInWithGoogle;
+            document.getElementById('btn-logout').onclick = signOut;
+            document.getElementById('btn-send-tg').onclick = sendToTelegram;
+            
+            document.getElementById('live-date').innerText = new Date().toLocaleDateString('ru-RU', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            }).toUpperCase();
 
-        async function init() {
             await checkUser();
             await loadNews();
+
             setInterval(() => {
                 document.getElementById('exchange-val').innerText = `1 РУБ = ${(Math.random() * 99).toFixed(2)} USD`;
             }, 5000);
-        }
-        init();
+        });
     </script>
 </body>
 </html>
