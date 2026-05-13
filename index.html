@@ -40,6 +40,14 @@
         .sidebar-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; border-bottom: 3px solid var(--accent-red); padding-bottom: 5px; margin: 0 0 15px 0; text-transform: uppercase; }
         .exchange-rate { font-family: monospace; font-size: 1.2rem; font-weight: bold; color: var(--accent-red); text-align: center; display: block; padding: 10px; border: 1px dashed #ccc; }
         
+        /* НОВЫЕ СТИЛИ ДЛЯ АВТОРИЗАЦИИ */
+        .auth-btn { width: 100%; padding: 10px; font-weight: bold; border: 2px solid var(--text-dark); cursor: pointer; text-transform: uppercase; font-family: 'Roboto', sans-serif; transition: 0.2s; margin-top: 10px; }
+        .login-btn { background: #fff; color: var(--text-dark); }
+        .login-btn:hover { background: var(--text-dark); color: #fff; }
+        .logout-btn { background: var(--accent-red); border-color: var(--accent-red); color: #fff; }
+        .logout-btn:hover { background: #900; }
+        .agent-name { word-break: break-all; color: var(--accent-red); }
+
         @media (max-width: 900px) {
             main { grid-template-columns: 1fr; }
             aside { border-left: none; padding-top: 20px; border-top: 2px solid var(--text-dark); }
@@ -61,10 +69,26 @@
         <section id="news-container">ОЖИДАНИЕ СВОДКИ...</section>
         
         <aside>
+            <!-- НОВЫЙ БЛОК АВТОРИЗАЦИИ -->
+            <div class="sidebar-box" id="auth-box">
+                <h3 class="sidebar-title">ДОСТУП В КЛУБ</h3>
+                <div id="unauth-view">
+                    <button class="auth-btn login-btn" onclick="signInWithGoogle()">ВОЙТИ ЧЕРЕЗ GOOGLE</button>
+                </div>
+                <div id="auth-view" style="display: none;">
+                    <div style="font-size: 0.8rem; margin-bottom: 10px;">
+                        <strong>АГЕНТ:</strong><br>
+                        <span id="user-email" class="agent-name" style="font-size: 1rem; font-weight: bold;"></span>
+                    </div>
+                    <button class="auth-btn logout-btn" onclick="signOut()">ВЫЙТИ</button>
+                </div>
+            </div>
+
             <div class="sidebar-box">
                 <h3 class="sidebar-title">БИРЖА BOGDAN</h3>
                 <div class="exchange-rate" id="exchange-val">1 RUB = 0.00 USD</div>
             </div>
+            
             <div class="sidebar-box">
                 <h3 class="sidebar-title">РЕДАКЦИЯ</h3>
                 <div style="font-size: 0.8rem;">
@@ -83,9 +107,45 @@
             var sbClient = window.supabase.createClient(S_URL, S_KEY);
         }
 
+        // === БЛОК АВТОРИЗАЦИИ ===
+        async function signInWithGoogle() {
+            await sbClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin
+                }
+            });
+        }
+
+        async function signOut() {
+            await sbClient.auth.signOut();
+        }
+
+        async function checkUser() {
+            const { data: { user } } = await sbClient.auth.getUser();
+            const unauthView = document.getElementById('unauth-view');
+            const authView = document.getElementById('auth-view');
+            
+            if (user) {
+                unauthView.style.display = 'none';
+                authView.style.display = 'block';
+                // Берем имя до собаки в email, чтобы было красиво
+                document.getElementById('user-email').innerText = user.email.split('@')[0].toUpperCase();
+            } else {
+                unauthView.style.display = 'block';
+                authView.style.display = 'none';
+            }
+        }
+
+        // Слушатель: автоматически обновляет UI, если юзер вошел/вышел
+        sbClient.auth.onAuthStateChange((event, session) => {
+            checkUser();
+        });
+        // ========================
+
         async function handleReaction(id, field, current) {
             const key = 'reacted_' + field + '_' + id;
-            if (localStorage.getItem(key)) return; // Блокируем на уровне кода
+            if (localStorage.getItem(key)) return;
 
             const { error } = await sbClient.from('news').update({ [field]: (Number(current) || 0) + 1 }).eq('id', id);
             if (!error) {
@@ -135,6 +195,9 @@
         }
 
         document.getElementById('live-date').innerText = new Date().toLocaleDateString('ru-RU').toUpperCase();
+        
+        // Запускаем всё при загрузке
+        checkUser();
         loadNews();
         updateRates();
         setInterval(updateRates, 4000);
