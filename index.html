@@ -50,18 +50,18 @@
         <button class="snake-btn" style="margin-top: 20px;" onclick="stopSnake()">EXIT</button>
     </div>
     <script>
-        // СТРОГО ОДИН РАЗ
-        const SUPABASE_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ИСПОЛЬЗУЕМ var ВМЕСТО const, ЧТОБЫ ИЗБЕЖАТЬ ОШИБКИ В ТВОЕМ БРАУЗЕРЕ
+        var SUPABASE_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
+        var SUPABASE_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         (function init() {
-            const now = new Date();
+            var now = new Date();
             document.getElementById('live-date').innerText = now.toLocaleDateString('ru-RU').toUpperCase();
             
             async function getNews() {
-                const { data, error } = await supabase.from('news').select('*').order('id', { ascending: false });
-                const container = document.getElementById('news-container');
+                var { data, error } = await supabase.from('news').select('*').order('id', { ascending: false });
+                var container = document.getElementById('news-container');
                 if (error) { container.innerHTML = "ERROR: " + error.message; return; }
                 container.innerHTML = data.map((n, i) => `
                     <article class="news-article">
@@ -76,10 +76,10 @@
         })();
 
         // ЗМЕЙКА
-        const canvas = document.getElementById('snakeGame');
-        const ctx = canvas.getContext('2d');
-        let snake, food, dx, dy, score, gameRunning, lastTime;
-        const box = 20;
+        var canvas = document.getElementById('snakeGame');
+        var ctx = canvas.getContext('2d');
+        var snake, food, dx, dy, score, gameRunning, lastTime;
+        var box = 20;
 
         function startSnake() {
             document.getElementById('game-overlay').style.display = 'flex';
@@ -91,7 +91,7 @@
         function stopSnake() { gameRunning = false; document.getElementById('game-overlay').style.display = 'none'; }
         document.addEventListener('keydown', e => {
             if(!gameRunning) return;
-            const k = e.key.toLowerCase();
+            var k = e.key.toLowerCase();
             if(k==='w' && dy===0) {dx=0; dy=-box;} if(k==='s' && dy===0) {dx=0; dy=box;}
             if(k==='a' && dx===0) {dx=-box; dy=0;} if(k==='d' && dx===0) {dx=box; dy=0;}
         });
@@ -100,7 +100,7 @@
             requestAnimationFrame(gameLoop);
             if(t - lastTime > 100) {
                 lastTime = t;
-                const head = {x: snake[0].x+dx, y: snake[0].y+dy};
+                var head = {x: snake[0].x+dx, y: snake[0].y+dy};
                 if(head.x<0||head.x>=400||head.y<0||head.y>=400||snake.some(s=>s.x===head.x&&s.y===head.y)) {startSnake(); return;}
                 snake.unshift(head);
                 if(head.x===food.x && head.y===food.y) { score++; document.getElementById('score').innerText = score; food = {x: Math.floor(Math.random()*20)*box, y: Math.floor(Math.random()*20)*box}; } else { snake.pop(); }
