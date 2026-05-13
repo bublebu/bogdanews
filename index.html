@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOGDANEWS</title>
+
+    <!-- ПОДТВЕРЖДЕНИЕ ГУГЛ -->
     <meta name="google-site-verification" content="ii3A3TpdlwaiuA9tNgDsQ4Ld_0HsKZJVB_KH6YPKzIk" />
+    
+    <!-- ИКОНКИ (НЕ ЗАБУДЬ ЗАЛИТЬ ФАЙЛ favicon.png В РЕПОЗИТОРИЙ) -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <!-- SEO И КОРПОРАТИВНЫЕ МЕТА-ТЕГИ -->
     <meta name="description" content="Официальный сайт BOGDANEWS. Актуальные новости, курьезные происшествия, биржа BOGDAN и финансовая сводка.">
     <meta name="keywords" content="bogdanews, богданьюс, богдан ньюс, новости богдан, bublebu github">
+    <meta property="og:title" content="BOGDANEWS — ИНФОРМАЦИОННОЕ АГЕНТСТВО">
+    <meta property="og:description" content="Главный источник новостей в 2026 году.">
+    <meta property="og:type" content="website">
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -131,6 +142,19 @@
             border: 1px dashed #ccc;
         }
 
+        .staff-list {
+            font-size: 0.8rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .staff-list li {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 2px;
+        }
+
         @media (max-width: 900px) {
             main { grid-template-columns: 1fr; }
             aside { border-left: none; padding-left: 0; border-top: 2px solid var(--text-dark); padding-top: 20px; }
@@ -156,6 +180,15 @@
                 <h3 class="sidebar-title">БИРЖА BOGDAN</h3>
                 <div class="exchange-rate" id="exchange-val">1 RUB = 0.00 USD</div>
             </div>
+
+            <div class="sidebar-box">
+                <h3 class="sidebar-title">РЕДАКЦИЯ</h3>
+                <ul class="staff-list">
+                    <li><strong>ГЛАВНЫЙ РЕДАКТОР:</strong> БОГДАН</li>
+                    <li><strong>РАЗРАБОТКА:</strong> LETO</li>
+                    <li><strong>ТЕХПОДДЕРЖКА:</strong> ПИТЕРА НЕТ</li>
+                </ul>
+            </div>
             
             <div class="sidebar-box" style="font-size: 0.8rem;">
                 <strong>РЕКЛАМА:</strong> <a href="https://t.me/eblantale" style="color: var(--accent-red); text-decoration: none; font-weight: bold;">EBLANTALE</a> — САМАЯ ОЖИДАЕМАЯ ИГРА ГОДА.
@@ -166,7 +199,7 @@
     <footer style="background: #f9f9f9; border-top: 1px solid #ccc; padding: 30px 0; text-align: center; font-size: 0.8rem; color: #666; margin-top: 50px;">
         <p style="font-weight: bold; margin: 0; color: #1a1a1a;">© 2026 Информационное агентство BOGDANEWS. Все права защищены.</p>
         <p style="font-size: 0.7rem; max-width: 600px; margin: 10px auto 0 auto; line-height: 1.4; color: #999;">
-            Материалы, размещенные на данном ресурсе, носят исключительно юмористический, сатирический и развлекательный характер. Все совпадения с реальными лицами или событиями случайны. 18+
+            Материалы носят исключительно развлекательный характер. Все совпадения случайны. Свидетельство о регистрации: B-001-2026.
         </p>
     </footer>
 
