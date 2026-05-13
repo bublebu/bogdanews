@@ -96,6 +96,7 @@
 
     <script>
         // --- КОНФИГУРАЦИЯ SUPABASE ---
+        // ПЕРЕМЕННАЯ ОБЪЯВЛЯЕТСЯ ТОЛЬКО ОДИН РАЗ (ИСПРАВЛЕНИЕ ОШИБКИ ИЗ image_2ad103.png)
         const SUPABASE_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -112,6 +113,7 @@
         async function loadNews() {
             const container = document.getElementById('news-container');
             
+            // Запрос данных из таблицы news (как в image_2adc20.png)
             let { data: news, error } = await supabase
                 .from('news')
                 .select('*')
@@ -133,7 +135,7 @@
                 const art = document.createElement('article');
                 art.className = 'news-article';
                 
-                // Используем дату из базы или текущую, если колонка пуста
+                // Берем заголовок и контент из твоей базы (image_2adc20.png)
                 const displayDate = item.date || new Date().toLocaleDateString('ru-RU');
 
                 art.innerHTML = `
