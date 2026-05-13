@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOGDANEWS</title>
+    <title>BOGDANEWS | АРХИВ</title>
 
     <meta name="google-site-verification" content="ii3A3TpdlwaiuA9tNgDsQ4Ld_0HsKZJVB_KH6YPKzIk" />
     <link rel="icon" type="image/png" href="favicon.png">
@@ -67,19 +67,19 @@
         <div class="site-title">BogdaNews</div>
         <div class="sub-header">
             <span id="live-date">...</span>
-            <span>COOL</span>
-            <span>VOL. CXIII — NO. 42</span>
+            <span>КРУТО</span>
+            <span>ТОМ CXIII — № 42</span>
         </div>
     </header>
     
     <main>
         <section id="left-col" class="sidebar-box" style="border:none">
-            <div class="sidebar-title">EDITORIAL</div>
+            <div class="sidebar-title">РЕДАКЦИЯ</div>
             <p style="font-size: 0.8rem; font-style: italic;">"ПРАВДА — ЭТО ТОЛЬКО ТО, ЧТО МЫ ПЕЧАТАЕМ. ОСТАЛЬНОЕ — ШУМ."</p>
         </section>
 
         <section id="news-container">
-            <div style="text-align: center; font-family: 'Roboto Mono';">ПОИСК СЕНСАЦИЙ...</div>
+            <div style="text-align: center; font-family: 'Roboto Mono';">ПОИСК НОВОСТЕЙ...</div>
         </section>
         
         <aside>
@@ -89,23 +89,23 @@
                         <button class="auth-btn login-btn" id="btn-login">РЕГИСТРАЦИЯ</button>
                     </div>
                     <div id="auth-view" style="display: none;">
-                        <span style="font-family: 'Roboto Mono'; font-size: 0.7rem;">ACCESS GRANTED:</span><br>
+                        <span style="font-family: 'Roboto Mono'; font-size: 0.7rem;">ДОСТУП РАЗРЕШЕН:</span><br>
                         <span id="user-email" style="font-weight: bold; font-family: 'Roboto Mono';"></span>
-                        <button class="auth-btn logout-btn" id="btn-logout">EXIT</button>
+                        <button class="auth-btn logout-btn" id="btn-logout">ВЫХОД</button>
                     </div>
                 </div>
             </div>
 
             <div class="sidebar-box">
-                <div class="sidebar-title">MARKET CRASH</div>
-                <div class="exchange-rate" id="exchange-val">1 RUB = 0.00 USD</div>
+                <div class="sidebar-title">КРАХ РЫНКА</div>
+                <div class="exchange-rate" id="exchange-val">1 РУБ = 0.00 USD</div>
             </div>
             
             <div class="sidebar-box">
-                <div class="sidebar-title">STAFF</div>
+                <div class="sidebar-title">ПЕРСОНАЛ</div>
                 <div style="font-size: 0.8rem; font-family: 'Roboto Mono';">
-                    EDITOR-IN-CHIEF: BOGDAN<br>
-                    TECH: NOBODY
+                    ГЛАВНЫЙ РЕДАКТОР: BOGDAN<br>
+                    ТЕХОТДЕЛ: НИКТО
                 </div>
             </div>
         </aside>
@@ -118,7 +118,7 @@
 
         let currentUser = null;
 
-        // Делаем функции доступными для HTML через window
+        // ЭКСПОРТ ФУНКЦИЙ ДЛЯ КНОПОК
         window.signInWithGoogle = async () => {
             await sbClient.auth.signInWithOAuth({
                 provider: 'google',
@@ -131,7 +131,21 @@
             location.reload();
         };
 
-        // Привязываем события к кнопкам
+        window.handleReaction = async (id, field, current) => {
+            if (!currentUser) { 
+                alert("ВХОД ВОСПРЕЩЕН. НУЖНА РЕГИСТРАЦИЯ."); 
+                return; 
+            }
+            const key = 'reacted_' + id;
+            if (localStorage.getItem(key)) return;
+
+            const { error } = await sbClient.from('news').update({ [field]: (Number(current) || 0) + 1 }).eq('id', id);
+            if (!error) {
+                localStorage.setItem(key, 'true');
+                loadNews(false); 
+            }
+        };
+
         document.getElementById('btn-login').onclick = window.signInWithGoogle;
         document.getElementById('btn-logout').onclick = window.signOut;
 
@@ -153,18 +167,6 @@
 
         sbClient.auth.onAuthStateChange(() => checkUser());
 
-        window.handleReaction = async (id, field, current) => {
-            if (!currentUser) { alert("ВХОД ВОСПРЕЩЕН. АВТОРИЗУЙТЕСЬ."); return; }
-            const key = 'reacted_' + id;
-            if (localStorage.getItem(key)) return;
-
-            const { error } = await sbClient.from('news').update({ [field]: (Number(current) || 0) + 1 }).eq('id', id);
-            if (!error) {
-                localStorage.setItem(key, 'true');
-                loadNews(false); 
-            }
-        };
-
         function formatDate(isoString) {
             if (!isoString) return "ВНЕ ВРЕМЕНИ";
             const date = new Date(isoString);
@@ -184,14 +186,14 @@
                 <article class="news-article">
                     <div class="article-meta">
                         <span class="pub-date">${dateStr}</span>
-                        <span>READS: ${n.views || 0}</span>
+                        <span>ПРОСМОТРОВ: ${n.views || 0}</span>
                     </div>
-                    <span class="category-tag">${i === 0 ? 'BREAKING NEWS' : 'CLASSIFIED'}</span>
-                    <h2 class="news-title">${n.title || 'UNKNOWN DATA'}</h2>
+                    <span class="category-tag">${i === 0 ? 'ГОРЯЧАЯ НОВОСТЬ' : 'АРХИВ'}</span>
+                    <h2 class="news-title">${n.title || 'НЕТ ДАННЫХ'}</h2>
                     <div class="news-content">${n.content || '...'}</div>
                     <div class="reactions">
-                        <button class="react-btn" ${hasReacted ? 'disabled' : ''} onclick="handleReaction(${n.id}, 'likes', ${n.likes || 0})">AGREE (${n.likes || 0})</button>
-                        <button class="react-btn" ${hasReacted ? 'disabled' : ''} onclick="handleReaction(${n.id}, 'dislikes', ${n.dislikes || 0})">DENY (${n.dislikes || 0})</button>
+                        <button class="react-btn" ${hasReacted ? 'disabled' : ''} onclick="handleReaction(${n.id}, 'likes', ${n.likes || 0})">ОДОБРИТЬ (${n.likes || 0})</button>
+                        <button class="react-btn" ${hasReacted ? 'disabled' : ''} onclick="handleReaction(${n.id}, 'dislikes', ${n.dislikes || 0})">ОСУДИТЬ (${n.dislikes || 0})</button>
                     </div>
                 </article>
             `}).join('');
@@ -208,7 +210,7 @@
         }
 
         function updateRates() {
-            document.getElementById('exchange-val').innerText = `1 RUB = ${(Math.random() * 999).toFixed(2)} USD`;
+            document.getElementById('exchange-val').innerText = `1 РУБ = ${(Math.random() * 999).toFixed(2)} USD`;
         }
 
         document.getElementById('live-date').innerText = new Date().toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
