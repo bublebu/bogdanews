@@ -75,7 +75,7 @@
     </header>
 
     <main>
-        <section id="news-container">ЗАГРУЗКА НОВОСТЕЙ ИЗ БАЗЫ ДАННЫХ...</section>
+        <section id="news-container">ПОДКЛЮЧЕНИЕ К СЕРВЕРУ...</section>
 
         <aside>
             <h3 class="sidebar-title">ТЕХ. ОТДЕЛ</h3>
@@ -96,7 +96,6 @@
 
     <script>
         // --- КОНФИГУРАЦИЯ SUPABASE ---
-        // ВСТАВЬ СВОИ ДАННЫЕ ТУТ:
         const SUPABASE_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -109,18 +108,23 @@
         }
         updateDate();
 
-        // 2. ЗАГРУЗКА НОВОСТЕЙ ИЗ SUPABASE
+        // 2. ЗАГРУЗКА НОВОСТЕЙ
         async function loadNews() {
             const container = document.getElementById('news-container');
             
             let { data: news, error } = await supabase
                 .from('news')
                 .select('*')
-                .order('id', { ascending: false }); // Новые новости сверху
+                .order('id', { ascending: false });
 
             if (error) {
-                container.innerHTML = "ОШИБКА ПОДКЛЮЧЕНИЯ К БАЗЕ.";
-                console.error(error);
+                container.innerHTML = "ОШИБКА БАЗЫ: " + error.message;
+                console.error("ОШИБКА:", error);
+                return;
+            }
+
+            if (!news || news.length === 0) {
+                container.innerHTML = "НОВОСТЕЙ ПОКА НЕТ. ДОБАВЬТЕ ИХ В ПАНЕЛИ SUPABASE.";
                 return;
             }
 
@@ -128,18 +132,22 @@
             news.forEach((item, index) => {
                 const art = document.createElement('article');
                 art.className = 'news-article';
+                
+                // Используем дату из базы или текущую, если колонка пуста
+                const displayDate = item.date || new Date().toLocaleDateString('ru-RU');
+
                 art.innerHTML = `
                     <span class="category">${index === 0 ? 'ГЛАВНОЕ' : 'СВОДКА'}</span>
-                    <h2 class="news-title">${item.title}</h2>
-                    <div class="news-meta">${item.date} // АВТОР: MISTER BOGDAN</div>
-                    <div class="news-content">${item.content}</div>
+                    <h2 class="news-title">${item.title || 'Без заголовка'}</h2>
+                    <div class="news-meta">${displayDate} // АВТОР: MISTER BOGDAN</div>
+                    <div class="news-content">${item.content || 'Нет содержания'}</div>
                 `;
                 container.appendChild(art);
             });
         }
         loadNews();
 
-        // --- ЗМЕЙКА (ТВОЙ КОД ОСТАЛСЯ БЕЗ ИЗМЕНЕНИЙ) ---
+        // --- ЗМЕЙКА (SNAKE_OS) ---
         const canvas = document.getElementById('snakeGame');
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('score');
