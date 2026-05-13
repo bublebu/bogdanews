@@ -22,19 +22,15 @@
         
         body { background-color: var(--main-bg); color: var(--text-dark); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         
-        /* HEADER */
         header { border-bottom: 1px solid var(--text-dark); margin: 0 auto; max-width: 1300px; padding: 40px 20px; text-align: center; }
         .site-title { font-family: 'Playfair Display', serif; font-size: 5.5rem; margin: 0; text-transform: uppercase; letter-spacing: -3px; font-weight: 900; }
         .sub-header { border-top: 1px solid var(--text-dark); border-bottom: 4px double var(--text-dark); margin-top: 10px; padding: 10px 0; font-size: 0.85rem; text-transform: uppercase; font-family: 'Roboto Mono', monospace; display: flex; justify-content: space-between; font-weight: bold; }
 
-        /* LAYOUT */
         main { max-width: 1300px; margin: 40px auto; display: grid; grid-template-columns: 1fr 3fr 1fr; gap: 40px; padding: 0 20px; }
         
-        /* LEFT COLUMN (DATE & STATS) */
         .article-meta { font-family: 'Roboto Mono', monospace; font-size: 0.75rem; color: #666; text-transform: uppercase; border-top: 1px solid #000; padding-top: 10px; }
         .pub-date { color: var(--accent-red); font-weight: bold; display: block; margin-bottom: 5px; }
 
-        /* CENTER COLUMN (CONTENT) */
         .news-article { margin-bottom: 60px; padding-bottom: 40px; border-bottom: var(--border-thin); }
         .category-tag { font-family: 'Roboto Mono', monospace; font-size: 0.7rem; font-weight: bold; text-decoration: underline; text-underline-offset: 4px; margin-bottom: 15px; display: block; }
         .news-title { font-family: 'Playfair Display', serif; font-size: 3rem; line-height: 1; margin: 10px 0 20px 0; font-weight: 700; letter-spacing: -1px; }
@@ -42,20 +38,17 @@
         .news-content { font-size: 1.1rem; line-height: 1.6; text-align: justify; color: #333; }
         .news-content::first-letter { float: left; font-family: 'Playfair Display', serif; font-size: 4rem; line-height: 0.8; padding: 8px 8px 0 0; font-weight: 900; }
 
-        /* REACTIONS */
         .reactions { margin-top: 25px; display: flex; gap: 10px; }
         .react-btn { background: none; border: 1px solid #000; padding: 8px 15px; font-family: 'Roboto Mono', monospace; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; }
         .react-btn:hover:not(:disabled) { background: var(--text-dark); color: #fff; }
         .react-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
 
-        /* ASIDE */
         aside { border-left: 1px solid #ccc; padding-left: 20px; }
         .sidebar-box { border-bottom: var(--border-thin); padding-bottom: 20px; margin-bottom: 30px; }
         .sidebar-title { font-family: 'Roboto Mono', monospace; font-size: 0.9rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; background: #000; color: #fff; display: inline-block; padding: 2px 8px; }
         
         .exchange-rate { font-family: 'Roboto Mono', monospace; font-size: 1.1rem; font-weight: bold; color: var(--accent-red); }
         
-        /* AUTH */
         .auth-card { background: #fff; border: 1px solid #000; padding: 15px; box-shadow: 8px 8px 0px #000; }
         .auth-btn { width: 100%; padding: 12px; font-family: 'Roboto Mono', monospace; font-weight: bold; border: 2px solid #000; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .login-btn { background: #000; color: #fff; }
@@ -80,28 +73,25 @@
     </header>
     
     <main>
-        <!-- Левая колонка для красоты -->
         <section id="left-col" class="sidebar-box" style="border:none">
             <div class="sidebar-title">EDITORIAL</div>
             <p style="font-size: 0.8rem; font-style: italic;">"ПРАВДА — ЭТО ТОЛЬКО ТО, ЧТО МЫ ПЕЧАТАЕМ. ОСТАЛЬНОЕ — ШУМ."</p>
         </section>
 
-        <!-- Центральная колонка с новостями -->
         <section id="news-container">
             <div style="text-align: center; font-family: 'Roboto Mono';">ПОИСК СЕНСАЦИЙ...</div>
         </section>
         
-        <!-- Правая колонка -->
         <aside>
             <div class="sidebar-box">
                 <div class="auth-card" id="auth-box">
                     <div id="unauth-view">
-                        <button class="auth-btn login-btn" onclick="signInWithGoogle()">ENTER ARCHIVE</button>
+                        <button class="auth-btn login-btn" id="btn-login">ENTER ARCHIVE</button>
                     </div>
                     <div id="auth-view" style="display: none;">
                         <span style="font-family: 'Roboto Mono'; font-size: 0.7rem;">ACCESS GRANTED:</span><br>
                         <span id="user-email" style="font-weight: bold; font-family: 'Roboto Mono';"></span>
-                        <button class="auth-btn logout-btn" onclick="signOut()">EXIT</button>
+                        <button class="auth-btn logout-btn" id="btn-logout">EXIT</button>
                     </div>
                 </div>
             </div>
@@ -121,24 +111,29 @@
         </aside>
     </main>
 
-    <script>
+    <script type="module">
         const S_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
         const S_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
         const sbClient = window.supabase.createClient(S_URL, S_KEY);
 
         let currentUser = null;
 
-        async function signInWithGoogle() {
+        // Делаем функции доступными для HTML через window
+        window.signInWithGoogle = async () => {
             await sbClient.auth.signInWithOAuth({
                 provider: 'google',
-                options: { redirectTo: window.location.origin }
+                options: { redirectTo: 'https://bublebu.github.io/bogdanews/' }
             });
-        }
+        };
 
-        async function signOut() {
+        window.signOut = async () => {
             await sbClient.auth.signOut();
             location.reload();
-        }
+        };
+
+        // Привязываем события к кнопкам
+        document.getElementById('btn-login').onclick = window.signInWithGoogle;
+        document.getElementById('btn-logout').onclick = window.signOut;
 
         async function checkUser() {
             const { data: { user } } = await sbClient.auth.getUser();
@@ -150,12 +145,15 @@
                 unauthView.style.display = 'none';
                 authView.style.display = 'block';
                 document.getElementById('user-email').innerText = user.email.split('@')[0].toUpperCase();
+            } else {
+                unauthView.style.display = 'block';
+                authView.style.display = 'none';
             }
         }
 
         sbClient.auth.onAuthStateChange(() => checkUser());
 
-        async function handleReaction(id, field, current) {
+        window.handleReaction = async (id, field, current) => {
             if (!currentUser) { alert("ВХОД ВОСПРЕЩЕН. АВТОРИЗУЙТЕСЬ."); return; }
             const key = 'reacted_' + id;
             if (localStorage.getItem(key)) return;
@@ -165,7 +163,7 @@
                 localStorage.setItem(key, 'true');
                 loadNews(false); 
             }
-        }
+        };
 
         function formatDate(isoString) {
             if (!isoString) return "ВНЕ ВРЕМЕНИ";
