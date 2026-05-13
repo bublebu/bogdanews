@@ -20,8 +20,19 @@
             --border-thick: 3px solid var(--text-dark);
         }
         
-        body { background-color: var(--main-bg); color: var(--text-dark); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--main-bg); color: var(--text-dark); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
+        /* КАСТОМНОЕ УВЕДОМЛЕНИЕ */
+        #custom-alert {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: #000; color: #fff; padding: 15px 30px;
+            font-family: 'Roboto Mono', monospace; font-weight: bold; z-index: 10000;
+            border: 2px solid var(--accent-red); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase; font-size: 0.9rem;
+        }
+        #custom-alert.show { top: 20px; }
+
         header { border-bottom: 1px solid var(--text-dark); margin: 0 auto; max-width: 1300px; padding: 40px 20px; text-align: center; }
         .site-title { font-family: 'Playfair Display', serif; font-size: 5.5rem; margin: 0; text-transform: uppercase; letter-spacing: -3px; font-weight: 900; }
         .sub-header { border-top: 1px solid var(--text-dark); border-bottom: 4px double var(--text-dark); margin-top: 10px; padding: 10px 0; font-size: 0.85rem; text-transform: uppercase; font-family: 'Roboto Mono', monospace; display: flex; justify-content: space-between; font-weight: bold; }
@@ -34,29 +45,24 @@
         .news-article { margin-bottom: 60px; padding-bottom: 40px; border-bottom: var(--border-thin); }
         .category-tag { font-family: 'Roboto Mono', monospace; font-size: 0.7rem; font-weight: bold; text-decoration: underline; text-underline-offset: 4px; margin-bottom: 15px; display: block; }
         .news-title { font-family: 'Playfair Display', serif; font-size: 3rem; line-height: 1; margin: 10px 0 20px 0; font-weight: 700; letter-spacing: -1px; }
-        .news-title:hover { color: var(--accent-red); cursor: pointer; }
         .news-content { font-size: 1.1rem; line-height: 1.6; text-align: justify; color: #333; }
         .news-content::first-letter { float: left; font-family: 'Playfair Display', serif; font-size: 4rem; line-height: 0.8; padding: 8px 8px 0 0; font-weight: 900; }
 
-        .reactions { margin-top: 25px; display: flex; gap: 10px; }
-        .react-btn { background: none; border: 1px solid #000; padding: 8px 15px; font-family: 'Roboto Mono', monospace; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; }
+        .reactions { margin-top: 25px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .react-btn { background: none; border: 1px solid #000; padding: 6px 12px; font-family: 'Roboto Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: 0.2s; font-weight: bold; }
         .react-btn:hover:not(:disabled) { background: var(--text-dark); color: #fff; }
-        .react-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
 
         aside { border-left: 1px solid #ccc; padding-left: 20px; }
         .sidebar-box { border-bottom: var(--border-thin); padding-bottom: 20px; margin-bottom: 30px; }
         .sidebar-title { font-family: 'Roboto Mono', monospace; font-size: 0.9rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; background: #000; color: #fff; display: inline-block; padding: 2px 8px; }
         
-        .exchange-rate { font-family: 'Roboto Mono', monospace; font-size: 1.1rem; font-weight: bold; color: var(--accent-red); }
-        
         .auth-card { background: #fff; border: 1px solid #000; padding: 15px; box-shadow: 8px 8px 0px #000; }
         .auth-btn { width: 100%; padding: 12px; font-family: 'Roboto Mono', monospace; font-weight: bold; border: 2px solid #000; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .login-btn { background: #000; color: #fff; }
         .login-btn:hover { background: var(--accent-red); border-color: var(--accent-red); }
-        .logout-btn { background: #fff; color: var(--accent-red); border-color: var(--accent-red); }
 
-        .prop-input { width: 100%; border: 1px solid #000; padding: 8px; font-family: 'Roboto Mono'; margin-bottom: 10px; box-sizing: border-box; }
-        .prop-area { width: 100%; height: 100px; border: 1px solid #000; padding: 8px; font-family: 'Roboto Mono'; box-sizing: border-box; resize: none; }
+        .prop-input, .prop-area { width: 100%; border: 1px solid #000; padding: 8px; font-family: 'Roboto Mono'; margin-bottom: 10px; box-sizing: border-box; }
+        .prop-area { height: 100px; resize: none; }
 
         @media (max-width: 1000px) {
             main { grid-template-columns: 1fr; }
@@ -66,6 +72,8 @@
     </style>
 </head>
 <body>
+    <div id="custom-alert">СООБЩЕНИЕ ПОЛУЧЕНО</div>
+
     <header>
         <div class="site-title">BogdaNews</div>
         <div class="sub-header">
@@ -78,47 +86,31 @@
     <main>
         <section id="left-col" class="sidebar-box" style="border:none">
             <div class="sidebar-title">РЕДАКЦИЯ</div>
-            <p style="font-size: 0.8rem; font-style: italic;">"ПРАВДА — ЭТО ТОЛЬКО ТО, ЧТО МЫ ПЕЧАТАЕМ. ОСТАЛЬНОЕ — ШУМ."</p>
+            <p style="font-size: 0.8rem; font-style: italic;">"ПРАВДА — ЭТО ТОЛЬКО ТО, ЧТО МЫ ПЕЧАТАЕМ."</p>
         </section>
 
         <section id="news-container">
-            <div id="loader" style="text-align: center; font-family: 'Roboto Mono';">ПОИСК НОВОСТЕЙ...</div>
+            <div id="loader" style="text-align: center; font-family: 'Roboto Mono';">ПЕЧАТАЕМ ГАЗЕТУ...</div>
         </section>
         
         <aside>
             <div class="sidebar-box">
-                <div class="auth-card" id="auth-box">
+                <div class="auth-card">
                     <div id="unauth-view">
-                        <button class="auth-btn login-btn" id="btn-login">РЕГИСТРАЦИЯ</button>
+                        <button class="auth-btn login-btn" id="btn-login">ВХОД</button>
                     </div>
                     <div id="auth-view" style="display: none;">
-                        <span style="font-family: 'Roboto Mono'; font-size: 0.7rem;">ДОСТУП РАЗРЕШЕН:</span><br>
-                        <span id="user-email" style="font-weight: bold; font-family: 'Roboto Mono';"></span>
-                        <button class="auth-btn logout-btn" id="btn-logout">ВЫХОД</button>
+                        <span id="user-email" style="font-weight: bold; font-family: 'Roboto Mono'; font-size: 0.8rem;"></span>
+                        <button class="auth-btn" id="btn-logout" style="font-size: 0.7rem;">ВЫХОД</button>
                     </div>
                 </div>
             </div>
 
-            <div class="sidebar-box" id="suggest-news-section">
+            <div class="sidebar-box">
                 <div class="sidebar-title">ПРЕДЛОЖКА</div>
-                <div id="suggest-form">
-                    <input type="text" id="prop-title" class="prop-input" placeholder="ЗАГОЛОВОК">
-                    <textarea id="prop-text" class="prop-area" placeholder="ЧТО СЛУЧИЛОСЬ?"></textarea>
-                    <button class="auth-btn login-btn" id="btn-send-tg" style="font-size: 0.7rem;">ОТПРАВИТЬ БОГДАНУ</button>
-                </div>
-            </div>
-
-            <div class="sidebar-box">
-                <div class="sidebar-title">КРАХ РЫНКА</div>
-                <div class="exchange-rate" id="exchange-val">1 РУБ = 0.00 USD</div>
-            </div>
-            
-            <div class="sidebar-box">
-                <div class="sidebar-title">ПЕРСОНАЛ</div>
-                <div style="font-size: 0.8rem; font-family: 'Roboto Mono';">
-                    ГЛАВНЫЙ РЕДАКТОР: BOGDAN<br>
-                    ТЕХОТДЕЛ: НИКТО
-                </div>
+                <input type="text" id="prop-title" class="prop-input" placeholder="ЗАГОЛОВОК">
+                <textarea id="prop-text" class="prop-area" placeholder="ТЕКСТ НОВОСТИ"></textarea>
+                <button class="auth-btn login-btn" id="btn-send-tg">ОТПРАВИТЬ</button>
             </div>
         </aside>
     </main>
@@ -130,83 +122,58 @@
 
         let currentUser = null;
 
-        // Отправка данных
-        async function sendToTelegram() {
-            if (!currentUser) {
-                alert("КТО ВЫ? СНАЧАЛА АВТОРИЗУЙТЕСЬ.");
-                return;
+        function showNewsAlert(text) {
+            const el = document.getElementById('custom-alert');
+            el.innerText = text;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        async function checkBanStatus() {
+            if (!currentUser) return false;
+            const { data, error } = await sbClient.from('profiles').select('is_banned').eq('id', currentUser.id).single();
+            if (data && data.is_banned) {
+                showNewsAlert("ВЫ ЗАБАНЕНЫ В РЕДАКЦИИ.");
+                return true;
             }
+            return false;
+        }
+
+        async function sendToTelegram() {
+            if (!currentUser) { showNewsAlert("НУЖНА РЕГИСТРАЦИЯ"); return; }
+            if (await checkBanStatus()) return;
 
             const title = document.getElementById('prop-title').value.trim();
             const text = document.getElementById('prop-text').value.trim();
+            if (!title || !text) { showNewsAlert("ПУСТЫЕ ПОЛЯ"); return; }
 
-            if (!title || !text) {
-                alert("ЗАПОЛНИТЕ ВСЕ ПОЛЯ.");
-                return;
+            const { error } = await sbClient.from('suggestions').insert([{ title, content: text, author_email: currentUser.email }]);
+            if (!error) {
+                showNewsAlert("ПРИНЯТО! ЖДИ В ГАЗЕТЕ.");
+                document.getElementById('prop-title').value = '';
+                document.getElementById('prop-text').value = '';
             }
-
-            try {
-                const { error, status } = await sbClient
-                    .from('suggestions')
-                    .insert([{ 
-                        title: title, 
-                        content: text, 
-                        author_email: currentUser.email 
-                    }]);
-
-                if (error) {
-                    console.error("Ошибка Supabase:", error);
-                    alert(`ОШИБКА ${status}: ${error.message}\nПроверьте, создана ли таблица.`);
-                } else {
-                    alert("ПРИНЯТО! ПРОВЕРЯЙ ТЕЛЕГРАМ.");
-                    document.getElementById('prop-title').value = '';
-                    document.getElementById('prop-text').value = '';
-                }
-            } catch (err) {
-                console.error("Критическая ошибка:", err);
-                alert("СБОЙ ПОДКЛЮЧЕНИЯ.");
-            }
-        }
-
-        async function signInWithGoogle() {
-            await sbClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin + window.location.pathname }
-            });
-        }
-
-        async function signOut() {
-            await sbClient.auth.signOut();
-            location.reload();
         }
 
         window.handleReaction = async (id, field, current) => {
-            if (!currentUser) { alert("НУЖНА РЕГИСТРАЦИЯ."); return; }
-            const key = 'reacted_' + id;
+            if (!currentUser) { showNewsAlert("ВОЙДИТЕ В СИСТЕМУ"); return; }
+            if (await checkBanStatus()) return;
+            
+            const key = `reacted_${id}_${field}`;
             if (localStorage.getItem(key)) return;
 
             const { error } = await sbClient.from('news').update({ [field]: (Number(current) || 0) + 1 }).eq('id', id);
             if (!error) {
                 localStorage.setItem(key, 'true');
-                await loadNews(); 
+                loadNews();
             }
         };
 
-        async function checkUser() {
-            const { data: { user } } = await sbClient.auth.getUser();
-            currentUser = user;
-            if (user) {
-                document.getElementById('unauth-view').style.display = 'none';
-                document.getElementById('auth-view').style.display = 'block';
-                document.getElementById('user-email').innerText = user.email.split('@')[0].toUpperCase();
-            }
-        }
-
         async function loadNews() {
             const { data, error } = await sbClient.from('news').select('*').order('id', { ascending: false });
-            const container = document.getElementById('news-container');
             if (error) return;
-
+            
+            const container = document.getElementById('news-container');
             container.innerHTML = data.map((n, i) => `
                 <article class="news-article">
                     <div class="article-meta">
@@ -217,28 +184,30 @@
                     <h2 class="news-title">${n.title}</h2>
                     <div class="news-content">${n.content}</div>
                     <div class="reactions">
-                        <button class="react-btn" onclick="window.handleReaction(${n.id}, 'likes', ${n.likes})">👍 ${n.likes}</button>
+                        <button class="react-btn" onclick="window.handleReaction(${n.id}, 'likes', ${n.likes || 0})">👍 ${n.likes || 0}</button>
+                        <button class="react-btn" onclick="window.handleReaction(${n.id}, 'dislikes', ${n.dislikes || 0})">👎 ${n.dislikes || 0}</button>
                     </div>
                 </article>
             `).join('');
         }
 
-        // Инициализация при полной загрузке страницы
         document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('btn-login').onclick = signInWithGoogle;
-            document.getElementById('btn-logout').onclick = signOut;
+            document.getElementById('btn-login').onclick = () => sbClient.auth.signInWithOAuth({ provider: 'google' });
+            document.getElementById('btn-logout').onclick = () => { sbClient.auth.signOut(); location.reload(); };
             document.getElementById('btn-send-tg').onclick = sendToTelegram;
-            
+
             document.getElementById('live-date').innerText = new Date().toLocaleDateString('ru-RU', { 
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
             }).toUpperCase();
 
-            await checkUser();
-            await loadNews();
-
-            setInterval(() => {
-                document.getElementById('exchange-val').innerText = `1 РУБ = ${(Math.random() * 99).toFixed(2)} USD`;
-            }, 5000);
+            const { data: { user } } = await sbClient.auth.getUser();
+            if (user) {
+                currentUser = user;
+                document.getElementById('unauth-view').style.display = 'none';
+                document.getElementById('auth-view').style.display = 'block';
+                document.getElementById('user-email').innerText = user.email.split('@')[0].toUpperCase();
+            }
+            loadNews();
         });
     </script>
 </body>
