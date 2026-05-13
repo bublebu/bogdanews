@@ -3,44 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SECURE NEWS FEED</title>
+    <title>BOGDANEWS | CENTRAL FEED</title>
     <style>
-        body { font-family: 'Courier New', Courier, monospace; max-width: 800px; margin: 0 auto; padding: 20px; background: #0a0a0a; color: #00ff00; }
-        h1 { border-bottom: 2px solid #00ff00; padding-bottom: 10px; }
-        .post { background: #111; border: 1px solid #333; margin-bottom: 20px; padding: 15px; }
-        .post-date { color: #555; font-size: 0.9em; margin-bottom: 10px; }
-        .post-title { font-size: 1.5em; font-weight: bold; margin-bottom: 10px; color: #fff; }
-        .post-content { line-height: 1.6; color: #ccc; }
-        .post-image { max-width: 100%; height: auto; margin-top: 15px; border: 1px solid #444; }
+        :root {
+            --bg: #0f1113;
+            --surface: #1a1d21;
+            --primary: #3b82f6;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ГЛАВНАЯ СЕТКА */
+        #news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        /* ГЛАВНАЯ НОВОСТЬ (ПЕРВАЯ В СПИСКЕ) */
+        #news-container .post:first-child {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 25px;
+            background: var(--surface);
+            padding: 0;
+            border-radius: 12px;
+        }
+
+        .post {
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .post-img-wrapper {
+            width: 100%;
+            height: 200px;
+            background: #24292e;
+            overflow: hidden;
+        }
+
+        /* ФОТО ДЛЯ ГЛАВНОЙ НОВОСТИ */
+        #news-container .post:first-child .post-img-wrapper {
+            width: 60%;
+            height: 450px;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #news-container .post:first-child .post-body {
+            width: 40%;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+            width: fit-content;
+        }
+
+        .post-date {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        .post-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .post-content {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* ОГРАНИЧЕНИЕ ТЕКСТА (ЧТОБЫ КАРТОЧКИ БЫЛИ РОВНЫЕ) */
+        .post:not(:first-child) .post-content {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (max-width: 850px) {
+            #news-container .post:first-child {
+                flex-direction: column;
+            }
+            #news-container .post:first-child .post-img-wrapper,
+            #news-container .post:first-child .post-body {
+                width: 100%;
+            }
+            #news-container .post:first-child .post-img-wrapper {
+                height: 250px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>СИСТЕМА ОПОВЕЩЕНИЯ</h1>
-    <div id="news-container">ЗАГРУЗКА ДАННЫХ...</div>
 
-    <script>
-        fetch('news.json')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('news-container');
-                container.innerHTML = '';
-                // СОРТИРОВКА НОВОСТЕЙ (НОВЫЕ СВЕРХУ)
-                data.reverse().forEach(post => {
-                    let html = `<div class="post">
-                                    <div class="post-date">[ ${post.date} ]</div>
-                                    <div class="post-title">${post.title}</div>
-                                    <div class="post-content">${post.content}</div>`;
-                    if (post.image) {
-                        html += `<img src="img/${post.image}" class="post-image" alt="Прикрепленное изображение">`;
-                    }
-                    html += `</div>`;
-                    container.innerHTML += html;
-                });
-            })
-            .catch(error => {
-                document.getElementById('news-container').innerHTML = 'ОШИБКА ДОСТУПА К БАЗЕ ДАННЫХ.';
-                console.error(error);
+<header>
+    <div class="container">
+        <h1>BOGDANEWS // GLOBAL EDITION</h1>
+    </div>
+</header>
+
+<main class="container">
+    <div id="news-container">
+        <p>СИНХРОНИЗАЦИЯ ПОТОКА ДАННЫХ...</p>
+    </div>
+</main>
+
+<script>
+    fetch('news.json')
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('news-container');
+            container.innerHTML = '';
+            
+            // НОВЫЕ НОВОСТИ СВЕРХУ
+            data.reverse().forEach((post, index) => {
+                const hasImage = post.image && post.image.trim() !== "";
+                
+                let html = `
+                <article class="post">
+                    ${hasImage ? `
+                    <div class="post-img-wrapper">
+                        <img src="img/${post.image}" class="post-image" alt="Visual">
+                    </div>` : ''}
+                    <div class="post-body">
+                        <span class="tag">ОБНОВЛЕНИЕ</span>
+                        <div class="post-date">${post.date}</div>
+                        <h2 class="post-title">${post.title}</h2>
+                        <p class="post-content">${post.content}</p>
+                    </div>
+                </article>`;
+                
+                container.innerHTML += html;
             });
-    </script>
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('news-container').innerHTML = '<p>ОШИБКА ПОЛУЧЕНИЯ ДАННЫХ.</p>';
+        });
+</script>
+
 </body>
 </html>
