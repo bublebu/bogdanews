@@ -3,230 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOGDANEWS | ГЛАВНЫЙ АРХИВ [v1.21.1]</title>
+    <title>BOGDANEWS | ГИТХАБ ИЗДАНИЕ [v1.21.1]</title>
     
-    <!-- ВНЕШНИЕ СКРИПТЫ -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { 
-            --main-bg: #f4f1ea; 
-            --text-dark: #1a1a1a; 
-            --accent-red: #d30000; 
-        }
+        :root { --bg: #f4f1ea; --dark: #1a1a1a; --red: #d30000; }
+        body { background: var(--bg); color: var(--dark); font-family: 'Georgia', serif; margin: 0; padding: 0; }
         
-        /* ЭФФЕКТ ГАЗЕТНОГО ШУМА */
+        /* ШУМ ГАЗЕТЫ */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.15; pointer-events: none; z-index: 9999;
+            opacity: 0.12; pointer-events: none; z-index: 10000;
         }
 
-        body { background-color: var(--main-bg); color: var(--text-dark); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
-        
         /* БЕГУЩАЯ СТРОКА */
-        .ticker-wrap {
-            background: var(--text-dark); color: #fff; padding: 5px 0;
-            overflow: hidden; font-family: 'Roboto Mono'; font-size: 0.8rem;
-        }
-        .ticker {
-            display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite;
-        }
-        @keyframes ticker {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
+        .ticker-wrap { background: #000; color: #fff; padding: 5px 0; overflow: hidden; font-family: 'Roboto Mono'; font-size: 0.75rem; }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 30s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* КАПЧА-МОДАЛКА */
-        #captcha-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 20000; justify-content: center; align-items: center;
-        }
-        .captcha-box {
-            background: #fff; padding: 30px; border: 4px solid var(--text-dark); text-align: center;
-            box-shadow: 15px 15px 0 var(--accent-red); max-width: 350px;
-        }
+        /* ИНТЕРФЕЙС */
+        header { border-bottom: 5px double #000; max-width: 1200px; margin: 0 auto; padding: 20px; text-align: center; }
+        .site-title { font-family: 'Playfair Display', serif; font-size: 5rem; text-transform: uppercase; margin: 0; line-height: 0.8; }
+        
+        main { max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: 1fr 3fr 1.2fr; gap: 30px; padding: 0 20px; }
+        
+        .news-card { border-bottom: 1px solid #000; padding-bottom: 25px; margin-bottom: 30px; position: relative; }
+        .btn-print { position: absolute; right: 0; top: 0; background: #000; color: #fff; border: none; font-size: 0.6rem; padding: 3px 7px; cursor: pointer; }
 
-        /* СТИЛЬ ГАЗЕТЫ */
-        header { border-bottom: 4px double var(--text-dark); max-width: 1300px; margin: 0 auto; padding: 20px; text-align: center; }
-        .site-title { font-family: 'Playfair Display', serif; font-size: 5.5rem; margin: 0; text-transform: uppercase; letter-spacing: -3px; line-height: 0.9; }
+        .sidebar-box { background: #fff; border: 1px solid #000; padding: 15px; box-shadow: 4px 4px 0 #000; margin-bottom: 20px; }
+        .input-style { width: 100%; border: 1px solid #000; padding: 8px; font-family: 'Roboto Mono'; margin-bottom: 8px; box-sizing: border-box; }
         
-        main { max-width: 1300px; margin: 30px auto; display: grid; grid-template-columns: 1fr 3.5fr 1.5fr; gap: 40px; padding: 0 20px; }
-        
-        .news-article { margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid rgba(0,0,0,0.1); position: relative; }
-        .news-title { font-family: 'Playfair Display', serif; font-size: 2.8rem; margin: 15px 0; font-weight: 900; }
-        
-        /* КНОПКИ */
-        .btn-black { background: #000; color: #fff; border: none; padding: 12px; cursor: pointer; font-family: 'Roboto Mono'; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; }
-        .btn-black:hover { background: var(--accent-red); }
-        .btn-black:disabled { background: #ccc; cursor: not-allowed; }
-        
-        .react-btn { background: none; border: 1px solid #000; padding: 5px 10px; cursor: pointer; font-family: 'Roboto Mono'; font-size: 0.8rem; }
-        .btn-print { position: absolute; right: 0; top: 0; background: #000; color: #fff; border: none; font-size: 0.6rem; padding: 4px 8px; cursor: pointer; }
+        .btn-main { width: 100%; padding: 12px; background: #000; color: #fff; border: none; font-family: 'Roboto Mono'; font-weight: bold; cursor: pointer; }
+        .btn-main:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-main:hover:not(:disabled) { background: var(--red); }
 
-        .auth-card { background: #fff; border: 1px solid #000; padding: 20px; box-shadow: 6px 6px 0px #000; }
-        .prop-input { width: 100%; border: 1px solid #000; padding: 10px; font-family: 'Roboto Mono'; margin-bottom: 10px; box-sizing: border-box; }
+        /* МОДАЛКА КАПЧИ */
+        #gate { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:20000; display:none; justify-content:center; align-items:center; }
 
-        @media print { .no-print { display: none !important; } body::before { display: none; } .news-article { border: none; page-break-after: always; } }
-        @media (max-width: 1100px) { main { grid-template-columns: 1fr; } .site-title { font-size: 3.5rem; } }
+        @media print { .no-print { display: none !important; } }
+        @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap no-print">
-        <div class="ticker">
-            +++ BOGDANEWS ПРЕДЛОЖКА РАБОТАЕТ 24/7 +++
-        </div>
+<div id="gate" class="no-print">
+    <div style="background:#fff; padding:30px; border:4px solid #000; text-align:center; box-shadow: 10px 10px 0 var(--red);">
+        <h2 style="font-family:'Playfair Display';">ДОСТУП ОГРАНИЧЕН</h2>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADPQ_3U1o1hqP5Fj" data-callback="verifyOk"></div>
+        <button class="btn-main" id="gate-btn" disabled style="margin-top:15px;">ПОДТВЕРДИТЬ И ВХОДИТЬ</button>
     </div>
+</div>
 
-    <!-- МОДАЛКА КАПЧИ -->
-    <div id="captcha-modal" class="no-print">
-        <div class="captcha-box">
-            <h2 style="font-family: 'Playfair Display';">ВЕРИФИКАЦИЯ</h2>
-            <p style="font-size: 0.8rem;">Подтвердите, что вы не робот, для доступа к архивам.</p>
-            <div class="cf-turnstile" 
-                 data-sitekey="0x4AAAAAADPQ_3U1o1hqP5Fj" 
-                 data-callback="onCaptchaSuccess"></div>
-            <button class="btn-black" id="btn-continue" disabled>ПРОДОЛЖИТЬ</button>
-        </div>
+<div class="ticker-wrap no-print">
+    <div class="ticker">+++ BOGDANEWS v1.21.1 +++ СЕРВЕР SUPABASE ПОДКЛЮЧЕН +++ CLOUDFLARE TURNSTILE АКТИВЕН +++ ОЖИДАНИЕ НОВЫХ СТАТЕЙ +++</div>
+</div>
+
+<header>
+    <div class="site-title">BogdaNews</div>
+    <div style="font-family:'Roboto Mono'; border-top:1px solid #000; margin-top:10px; display:flex; justify-content:space-between; font-size:0.8rem; padding:5px 0;">
+        <span id="date">...</span>
+        <span>GITHUB EDITION</span>
+        <span>FREE PRESS</span>
     </div>
+</header>
 
-    <header>
-        <div class="site-title">BogdaNews</div>
-        <div style="font-family: 'Roboto Mono'; border-top: 1px solid #000; margin-top: 10px; display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.8rem;">
-            <span id="live-date">...</span>
-            <span>ВЕРСИЯ 1.21.1</span>
-            <span>ГИТХАБ АРХИВ</span>
+<main>
+    <aside class="no-print">
+        <div class="sidebar-box">
+            <h3 style="margin:0 0 10px 0; font-size:1rem;">СТАТУС</h3>
+            <p id="user-status" style="font-size:0.7rem; color:var(--red);">ТРЕБУЕТСЯ АВТОРИЗАЦИЯ</p>
         </div>
-    </header>
-    
-    <main>
-        <aside class="no-print">
-            <div style="font-weight: bold; background: #000; color: #fff; padding: 5px; margin-bottom: 10px;">ПРАВИЛА</div>
-            <p style="font-size: 0.75rem; line-height: 1.4;">Все материалы являются интеллектуальной собственностью. При копировании ссылка на BogdaNews обязательна.</p>
-        </aside>
+    </aside>
 
-        <section id="news-container">
-            <div style="text-align: center; font-family: 'Roboto Mono';">СИНХРОНИЗАЦИЯ С БАЗОЙ ДАННЫХ...</div>
-        </section>
+    <section id="feed">
+        <div style="text-align:center; font-family:'Roboto Mono';">ЗАГРУЗКА ЛЕНТЫ...</div>
+    </section>
+
+    <aside class="no-print">
+        <div class="sidebar-box" id="auth-section">
+            <button class="btn-main" id="login-btn">ВОЙТИ ЧЕРЕЗ GOOGLE</button>
+        </div>
         
-        <aside class="no-print">
-            <div class="auth-card">
-                <div id="unauth-view">
-                    <p style="font-size: 0.7rem; margin-bottom: 10px; font-family: 'Roboto Mono';">ВХОД ДЛЯ СОТРУДНИКОВ</p>
-                    <button class="btn-black" id="btn-login">GOOGLE АВТОРИЗАЦИЯ</button>
-                </div>
-                <div id="auth-view" style="display: none;">
-                    <div id="user-email" style="font-family: 'Roboto Mono'; font-size: 0.75rem; margin-bottom: 10px; color: var(--accent-red); word-break: break-all;"></div>
-                    <button id="btn-logout" style="width:100%; cursor:pointer;">ВЫЙТИ</button>
-                </div>
-            </div>
+        <div class="sidebar-box" id="prop-section" style="display:none;">
+            <h3 style="margin:0 0 10px 0;">ПРЕДЛОЖИТЬ</h3>
+            <input type="text" id="p-title" class="input-style" placeholder="ЗАГОЛОВОК">
+            <textarea id="p-text" class="input-style" style="height:100px;" placeholder="ТЕКСТ..."></textarea>
+            <button class="btn-main" id="p-send">ОТПРАВИТЬ</button>
+            <button class="btn-main" id="logout-btn" style="margin-top:10px; background:#666;">ВЫЙТИ</button>
+        </div>
+    </aside>
+</main>
 
-            <div style="margin-top: 30px;">
-                <div style="font-weight: bold; background: #000; color: #fff; padding: 5px; margin-bottom: 10px;">ПРЕДЛОЖКА</div>
-                <input type="text" id="prop-title" class="prop-input" placeholder="ЗАГОЛОВОК">
-                <textarea id="prop-text" class="prop-area prop-input" placeholder="ВАША НОВОСТЬ..." style="height:120px;"></textarea>
-                <button class="btn-black" id="btn-send">ОТПРАВИТЬ В ПЕЧАТЬ</button>
-            </div>
-        </aside>
-    </main>
+<script type="module">
+    const S_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
+    const S_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
+    const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    <script type="module">
-        const S_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
-        const S_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
-        const sb = window.supabase.createClient(S_URL, S_KEY);
+    let isHuman = false;
 
-        let user = null;
-        let isVerified = false;
+    // КАПЧА
+    window.verifyOk = () => {
+        isHuman = true;
+        document.getElementById('gate-btn').disabled = false;
+    };
 
-        // --- CLOUDFLARE ---
-        window.onCaptchaSuccess = (token) => {
-            isVerified = true;
-            document.getElementById('btn-continue').disabled = false;
+    document.getElementById('gate-btn').onclick = () => {
+        document.getElementById('gate').style.display = 'none';
+    };
+
+    // ВХОД
+    async function startLogin() {
+        if (!isHuman) {
+            document.getElementById('gate').style.display = 'flex';
+            return;
+        }
+        
+        const { error } = await sb.auth.signInWithOAuth({
+            provider: 'google',
+            options: { 
+                // ВАЖНО: GitHub Pages требует полный путь для редиректа
+                redirectTo: 'https://bublebu.github.io/bogdanews/' 
+            }
+        });
+        if (error) alert(error.message);
+    }
+
+    // НОВОСТИ
+    async function getNews() {
+        const { data } = await sb.from('news').select('*').order('id', { ascending: false });
+        const feed = document.getElementById('feed');
+        if (!data) return;
+        feed.innerHTML = data.map(n => `
+            <article class="news-card">
+                <button class="btn-print no-print" onclick="window.print()">ПЕЧАТЬ</button>
+                <h2 style="font-family:'Playfair Display'; font-size:2.5rem; margin:10px 0;">${n.title}</h2>
+                <p style="line-height:1.6; font-size:1.1rem;">${n.content}</p>
+                <div style="font-family:'Roboto Mono'; font-size:0.7rem; color:#666;">АРХИВ №${n.id} | 👍 ${n.likes || 0}</div>
+            </article>
+        `).join('');
+    }
+
+    // ИНИЦИАЛИЗАЦИЯ
+    document.addEventListener('DOMContentLoaded', async () => {
+        document.getElementById('date').innerText = new Date().toLocaleDateString('ru-RU').toUpperCase();
+        document.getElementById('login-btn').onclick = startLogin;
+        document.getElementById('logout-btn').onclick = () => { sb.auth.signOut(); location.reload(); };
+        
+        document.getElementById('p-send').onclick = async () => {
+            const t = document.getElementById('p-title').value;
+            const c = document.getElementById('p-text').value;
+            const { data: { user } } = await sb.auth.getUser();
+            const { error } = await sb.from('suggestions').insert([{ title: t, content: c, author_email: user.email }]);
+            if (!error) { alert("ОТПРАВЛЕНО!"); document.getElementById('p-title').value = ''; document.getElementById('p-text').value = ''; }
         };
 
-        function showGuard() { document.getElementById('captcha-modal').style.display = 'flex'; }
-        document.getElementById('btn-continue').onclick = () => { document.getElementById('captcha-modal').style.display = 'none'; };
-
-        // --- РЕАКЦИИ ---
-        window.handleReaction = async (id, type, current) => {
-            if (!user) return alert("НУЖЕН ВХОД");
-            const key = `voted_${id}_${type}`;
-            if (localStorage.getItem(key)) return alert("ГОЛОС УЧТЕН");
-
-            const { error } = await sb.from('news').update({ [type]: (Number(current) || 0) + 1 }).eq('id', id);
-            if (!error) { localStorage.setItem(key, 'true'); loadNews(); }
-        };
-
-        // --- ПЕЧАТЬ ---
-        window.printArticle = () => window.print();
-
-        // --- ЗАГРУЗКА НОВОСТЕЙ ---
-        async function loadNews() {
-            const { data, error } = await sb.from('news').select('*').order('id', { ascending: false });
-            if (error) return;
-            const container = document.getElementById('news-container');
-            container.innerHTML = data.map(n => `
-                <article class="news-article">
-                    <button class="btn-print no-print" onclick="window.printArticle()">ПЕЧАТЬ (PDF)</button>
-                    <div style="font-family:'Roboto Mono'; font-size:0.7rem; border-bottom:1px solid #000; margin-bottom:10px;">
-                        АРХИВ №${n.id} | ${new Date(n.created_at).toLocaleDateString()}
-                    </div>
-                    <h2 class="news-title">${n.title}</h2>
-                    <div style="font-size:1.1rem; line-height:1.6; text-align:justify;">${n.content}</div>
-                    <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px;">
-                        <button class="react-btn" onclick="window.handleReaction(${n.id}, 'likes', ${n.likes || 0})">👍 ${n.likes || 0}</button>
-                    </div>
-                </article>
-            `).join('');
+        const { data: { user } } = await sb.auth.getUser();
+        if (user) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('prop-section').style.display = 'block';
+            document.getElementById('user-status').innerText = `СОТРУДНИК: ${user.email.split('@')[0].toUpperCase()}`;
+            document.getElementById('user-status').style.color = "green";
+        } else {
+            // Если не залогинен — показываем капчу через 2 секунды
+            setTimeout(() => { if (!isHuman) document.getElementById('gate').style.display = 'flex'; }, 2000);
         }
-
-        // --- АВТОСОХРАНЕНИЕ ПРЕДЛОЖКИ ---
-        const pTitle = document.getElementById('prop-title');
-        const pText = document.getElementById('prop-text');
-        [pTitle, pText].forEach(el => {
-            el.oninput = () => localStorage.setItem(`draft_${el.id}`, el.value);
-            el.value = localStorage.getItem(`draft_${el.id}`) || '';
-        });
-
-        async function sendProp() {
-            if (!user) return alert("ЗАРЕГИСТРИРУЙТЕСЬ ДЛЯ ОТПРАВКИ");
-            if (!pTitle.value || !pText.value) return alert("ЗАПОЛНИТЕ ПОЛЯ");
-
-            const { error } = await sb.from('suggestions').insert([{ 
-                title: pTitle.value, content: pText.value, author_email: user.email 
-            }]);
-
-            if (!error) {
-                alert("ОТПРАВЛЕНО В РЕДАКЦИЮ");
-                pTitle.value = ''; pText.value = '';
-                localStorage.removeItem('draft_prop-title'); localStorage.removeItem('draft_prop-text');
-            }
-        }
-
-        // --- СТАРТ ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('btn-login').onclick = () => { if(!isVerified) showGuard(); else sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); };
-            document.getElementById('btn-logout').onclick = () => { sb.auth.signOut(); location.reload(); };
-            document.getElementById('btn-send').onclick = sendProp;
-            
-            document.getElementById('live-date').innerText = new Date().toLocaleDateString('ru-RU', { 
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-            }).toUpperCase();
-
-            const { data } = await sb.auth.getUser();
-            if (data.user) {
-                user = data.user;
-                document.getElementById('unauth-view').style.display = 'none';
-                document.getElementById('auth-view').style.display = 'block';
-                document.getElementById('user-email').innerText = user.email.toUpperCase();
-            } else {
-                showGuard(); // Показываем капчу сразу для гостей
-            }
-            loadNews();
-        });
-    </script>
+        getNews();
+    });
+</script>
 </body>
 </html>
