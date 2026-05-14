@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOGDANEWS | ГЛАВНЫЙ АРХИВ</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>BOGDANEWS | ГЛАВНЫЙ АРХИВ [v1.21.1]</title>
+    
+    <!-- ВНЕШНИЕ СКРИПТЫ -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
     <style>
         :root { 
             --main-bg: #f4f1ea; 
@@ -14,15 +17,14 @@
             --accent-red: #d30000; 
         }
         
-        /* ЭФФЕКТ ШУМА ГАЗЕТЫ */
+        /* ЭФФЕКТ ГАЗЕТНОГО ШУМА */
         body::before {
-            content: "";
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://www.transparenttextures.com/patterns/stardust.png');
             opacity: 0.15; pointer-events: none; z-index: 9999;
         }
 
-        body { background-color: var(--main-bg); color: var(--text-dark); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--main-bg); color: var(--text-dark); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
         /* БЕГУЩАЯ СТРОКА */
         .ticker-wrap {
@@ -30,98 +32,106 @@
             overflow: hidden; font-family: 'Roboto Mono'; font-size: 0.8rem;
         }
         .ticker {
-            display: inline-block; white-space: nowrap; animation: ticker 30s linear infinite;
+            display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite;
         }
         @keyframes ticker {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
 
-        #custom-alert {
-            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-            background: #000; color: #fff; padding: 15px 30px;
-            font-family: 'Roboto Mono', monospace; z-index: 10001;
-            border: 2px solid var(--accent-red); transition: 0.5s;
-            text-transform: uppercase; font-weight: bold;
+        /* КАПЧА-МОДАЛКА */
+        #captcha-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 20000; justify-content: center; align-items: center;
         }
-        #custom-alert.show { top: 20px; }
+        .captcha-box {
+            background: #fff; padding: 30px; border: 4px solid var(--text-dark); text-align: center;
+            box-shadow: 15px 15px 0 var(--accent-red); max-width: 350px;
+        }
 
-        header { border-bottom: 2px solid var(--text-dark); max-width: 1300px; margin: 0 auto; padding: 20px; text-align: center; }
+        /* СТИЛЬ ГАЗЕТЫ */
+        header { border-bottom: 4px double var(--text-dark); max-width: 1300px; margin: 0 auto; padding: 20px; text-align: center; }
         .site-title { font-family: 'Playfair Display', serif; font-size: 5.5rem; margin: 0; text-transform: uppercase; letter-spacing: -3px; line-height: 0.9; }
         
-        main { max-width: 1300px; margin: 30px auto; display: grid; grid-template-columns: 1fr 3fr 1fr; gap: 40px; padding: 0 20px; }
+        main { max-width: 1300px; margin: 30px auto; display: grid; grid-template-columns: 1fr 3.5fr 1.5fr; gap: 40px; padding: 0 20px; }
         
-        .news-article { margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .news-article { margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid rgba(0,0,0,0.1); position: relative; }
         .news-title { font-family: 'Playfair Display', serif; font-size: 2.8rem; margin: 15px 0; font-weight: 900; }
-        .news-content { font-size: 1.1rem; line-height: 1.6; text-align: justify; }
         
-        .reactions { margin-top: 25px; display: flex; gap: 10px; }
-        .react-btn { background: none; border: 1px solid #000; padding: 8px 15px; cursor: pointer; font-family: 'Roboto Mono'; font-weight: bold; }
-        .react-btn:hover { background: #000; color: #fff; }
+        /* КНОПКИ */
+        .btn-black { background: #000; color: #fff; border: none; padding: 12px; cursor: pointer; font-family: 'Roboto Mono'; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .btn-black:hover { background: var(--accent-red); }
+        .btn-black:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .react-btn { background: none; border: 1px solid #000; padding: 5px 10px; cursor: pointer; font-family: 'Roboto Mono'; font-size: 0.8rem; }
+        .btn-print { position: absolute; right: 0; top: 0; background: #000; color: #fff; border: none; font-size: 0.6rem; padding: 4px 8px; cursor: pointer; }
 
         .auth-card { background: #fff; border: 1px solid #000; padding: 20px; box-shadow: 6px 6px 0px #000; }
-        .login-btn { width: 100%; padding: 12px; background: #000; color: #fff; border: none; font-family: 'Roboto Mono'; font-weight: bold; cursor: pointer; }
-        .login-btn:hover { background: var(--accent-red); }
+        .prop-input { width: 100%; border: 1px solid #000; padding: 10px; font-family: 'Roboto Mono'; margin-bottom: 10px; box-sizing: border-box; }
 
-        .prop-input, .prop-area { width: 100%; border: 1px solid #000; padding: 10px; font-family: 'Roboto Mono'; margin-bottom: 10px; box-sizing: border-box; }
-
-        footer { text-align: center; padding: 40px; font-family: 'Roboto Mono'; font-size: 0.7rem; border-top: 1px solid #000; max-width: 1300px; margin: 0 auto; }
-
-        @media (max-width: 1000px) { main { grid-template-columns: 1fr; } .site-title { font-size: 3.5rem; } }
+        @media print { .no-print { display: none !important; } body::before { display: none; } .news-article { border: none; page-break-after: always; } }
+        @media (max-width: 1100px) { main { grid-template-columns: 1fr; } .site-title { font-size: 3.5rem; } }
     </style>
 </head>
 <body>
-    <div class="ticker-wrap">
+
+    <div class="ticker-wrap no-print">
         <div class="ticker">
-            +++ ЭКСТРЕННЫЕ НОВОСТИ: ГАЗЕТА BOGDANEWS ОБНОВИЛА СИСТЕМУ БЕЗОПАСНОСТИ +++ ВСЕ ПОЛЬЗОВАТЕЛИ ДОЛЖНЫ ПРОЙТИ ВЕРИФИКАЦИЮ +++ РЕДАКЦИЯ РАБОТАЕТ 24/7 +++
+            +++ BOGDANEWS v1.21.1: СИСТЕМА ЗАЩИТЫ CLOUDFLARE АКТИВИРОВАНА +++ ВСЕ НОВОСТИ ПРОШЛИ ПРОВЕРКУ ТИПОГРАФИИ +++ ГАЗЕТА ВЫХОДИТ В ЦИФРОВОМ ФОРМАТЕ +++
         </div>
     </div>
 
-    <div id="custom-alert">СООБЩЕНИЕ</div>
+    <!-- МОДАЛКА КАПЧИ -->
+    <div id="captcha-modal" class="no-print">
+        <div class="captcha-box">
+            <h2 style="font-family: 'Playfair Display';">ВЕРИФИКАЦИЯ</h2>
+            <p style="font-size: 0.8rem;">Подтвердите, что вы не робот, для доступа к архивам.</p>
+            <div class="cf-turnstile" 
+                 data-sitekey="0x4AAAAAADPQ_3U1o1hqP5Fj" 
+                 data-callback="onCaptchaSuccess"></div>
+            <button class="btn-black" id="btn-continue" disabled>ПРОДОЛЖИТЬ</button>
+        </div>
+    </div>
 
     <header>
         <div class="site-title">BogdaNews</div>
-        <div style="font-family: 'Roboto Mono'; border-top: 1px solid #000; margin-top: 10px; display: flex; justify-content: space-between; padding: 5px 0;">
+        <div style="font-family: 'Roboto Mono'; border-top: 1px solid #000; margin-top: 10px; display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.8rem;">
             <span id="live-date">...</span>
-            <span>№1 В МИРЕ</span>
-            <span>ЦЕНА: БЕСПЛАТНО</span>
+            <span>ВЕРСИЯ 1.21.1</span>
+            <span>ГИТХАБ АРХИВ</span>
         </div>
     </header>
     
     <main>
-        <aside>
-            <div style="font-weight: bold; background: #000; color: #fff; padding: 5px; margin-bottom: 10px;">INFO</div>
-            <p style="font-size: 0.8rem; line-height: 1.4;">Все статьи проходят проверку. Любое копирование материалов без ссылки на BogdaNews запрещено законом редакции.</p>
+        <aside class="no-print">
+            <div style="font-weight: bold; background: #000; color: #fff; padding: 5px; margin-bottom: 10px;">ПРАВИЛА</div>
+            <p style="font-size: 0.75rem; line-height: 1.4;">Все материалы являются интеллектуальной собственностью. При копировании ссылка на BogdaNews обязательна.</p>
         </aside>
 
         <section id="news-container">
-            <div style="text-align: center; font-family: 'Roboto Mono';">СКАНИРУЕМ АРХИВЫ...</div>
+            <div style="text-align: center; font-family: 'Roboto Mono';">СИНХРОНИЗАЦИЯ С БАЗОЙ ДАННЫХ...</div>
         </section>
         
-        <aside>
+        <aside class="no-print">
             <div class="auth-card">
                 <div id="unauth-view">
-                    <p style="font-size: 0.7rem; margin-bottom: 10px; font-family: 'Roboto Mono';">ВХОД ТОЛЬКО ДЛЯ ПЕРСОНАЛА</p>
-                    <button class="login-btn" id="btn-login">ВОЙТИ ЧЕРЕЗ GOOGLE</button>
+                    <p style="font-size: 0.7rem; margin-bottom: 10px; font-family: 'Roboto Mono';">ВХОД ДЛЯ СОТРУДНИКОВ</p>
+                    <button class="btn-black" id="btn-login">GOOGLE АВТОРИЗАЦИЯ</button>
                 </div>
                 <div id="auth-view" style="display: none;">
-                    <div id="user-email" style="font-family: 'Roboto Mono'; font-size: 0.8rem; margin-bottom: 10px; color: var(--accent-red);"></div>
-                    <button id="btn-logout" style="width:100%; border:1px solid #000; padding:5px; cursor:pointer;">ВЫХОД</button>
+                    <div id="user-email" style="font-family: 'Roboto Mono'; font-size: 0.75rem; margin-bottom: 10px; color: var(--accent-red); word-break: break-all;"></div>
+                    <button id="btn-logout" style="width:100%; cursor:pointer;">ВЫЙТИ</button>
                 </div>
             </div>
 
             <div style="margin-top: 30px;">
-                <div style="font-weight: bold; background: #000; color: #fff; padding: 5px; margin-bottom: 10px;">ПРЕДЛОЖИТЬ СТАТЬЮ</div>
+                <div style="font-weight: bold; background: #000; color: #fff; padding: 5px; margin-bottom: 10px;">ПРЕДЛОЖКА</div>
                 <input type="text" id="prop-title" class="prop-input" placeholder="ЗАГОЛОВОК">
-                <textarea id="prop-text" class="prop-area" placeholder="ТЕКСТ..." style="height:150px;"></textarea>
-                <button class="login-btn" id="btn-send">ОТПРАВИТЬ</button>
+                <textarea id="prop-text" class="prop-area prop-input" placeholder="ВАША НОВОСТЬ..." style="height:120px;"></textarea>
+                <button class="btn-black" id="btn-send">ОТПРАВИТЬ В ПЕЧАТЬ</button>
             </div>
         </aside>
     </main>
-
-    <footer>
-        © 2025-2026 BOGDANEWS. ЮРИДИЧЕСКАЯ ИНФОРМАЦИЯ: САЙТ ЯВЛЯЕТСЯ ЧАСТНОЙ СОБСТВЕННОСТЬЮ. МЫ НЕ НЕСЕМ ОТВЕТСТВЕННОСТИ ЗА ВАШИ ЭМОЦИИ.
-    </footer>
 
     <script type="module">
         const S_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
@@ -129,96 +139,76 @@
         const sb = window.supabase.createClient(S_URL, S_KEY);
 
         let user = null;
+        let isVerified = false;
 
-        function alertMe(msg) {
-            const el = document.getElementById('custom-alert');
-            el.innerText = msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 3000);
-        }
+        // --- CLOUDFLARE ---
+        window.onCaptchaSuccess = (token) => {
+            isVerified = true;
+            document.getElementById('btn-continue').disabled = false;
+        };
 
-        // --- УНИВЕРСАЛЬНАЯ КАПЧА ---
-        function runCaptcha(label = "ПРОВЕРКА") {
-            const a = Math.floor(Math.random() * 10);
-            const b = Math.floor(Math.random() * 10);
-            const res = prompt(`${label}: Сколько будет ${a} + ${b}?`);
-            return parseInt(res) === (a + b);
-        }
-
-        // --- ВХОД С КАПЧЕЙ ---
-        async function login() {
-            if (!runCaptcha("ВХОД В СИСТЕМУ")) return alert("ОШИБКА КАПЧИ");
-            
-            const { error } = await sb.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin + window.location.pathname }
-            });
-            if (error) alertMe("ОШИБКА АВТОРИЗАЦИИ");
-        }
+        function showGuard() { document.getElementById('captcha-modal').style.display = 'flex'; }
+        document.getElementById('btn-continue').onclick = () => { document.getElementById('captcha-modal').style.display = 'none'; };
 
         // --- РЕАКЦИИ ---
         window.handleReaction = async (id, type, current) => {
-            if (!user) return alertMe("НУЖНА РЕГИСТРАЦИЯ");
+            if (!user) return alert("НУЖЕН ВХОД");
             const key = `voted_${id}_${type}`;
-            if (localStorage.getItem(key)) return alertMe("ГОЛОС УЖЕ ПРИНЯТ");
+            if (localStorage.getItem(key)) return alert("ГОЛОС УЧТЕН");
 
             const { error } = await sb.from('news').update({ [type]: (Number(current) || 0) + 1 }).eq('id', id);
-            if (!error) {
-                localStorage.setItem(key, 'true');
-                loadNews();
-            }
+            if (!error) { localStorage.setItem(key, 'true'); loadNews(); }
         };
 
-        // --- ЗАГРУЗКА ---
+        // --- ПЕЧАТЬ ---
+        window.printArticle = () => window.print();
+
+        // --- ЗАГРУЗКА НОВОСТЕЙ ---
         async function loadNews() {
             const { data, error } = await sb.from('news').select('*').order('id', { ascending: false });
             if (error) return;
             const container = document.getElementById('news-container');
             container.innerHTML = data.map(n => `
                 <article class="news-article">
+                    <button class="btn-print no-print" onclick="window.printArticle()">ПЕЧАТЬ (PDF)</button>
                     <div style="font-family:'Roboto Mono'; font-size:0.7rem; border-bottom:1px solid #000; margin-bottom:10px;">
-                        АРХИВНЫЙ НОМЕР: ${n.id} | ДАТА: ${new Date(n.created_at).toLocaleDateString()}
+                        АРХИВ №${n.id} | ${new Date(n.created_at).toLocaleDateString()}
                     </div>
                     <h2 class="news-title">${n.title}</h2>
-                    <div class="news-content">${n.content}</div>
-                    <div class="reactions">
+                    <div style="font-size:1.1rem; line-height:1.6; text-align:justify;">${n.content}</div>
+                    <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px;">
                         <button class="react-btn" onclick="window.handleReaction(${n.id}, 'likes', ${n.likes || 0})">👍 ${n.likes || 0}</button>
-                        <button class="react-btn" onclick="window.handleReaction(${n.id}, 'dislikes', ${n.dislikes || 0})">👎 ${n.dislikes || 0}</button>
                     </div>
                 </article>
             `).join('');
         }
 
-        // --- ПРЕДЛОЖКА С АВТОСОХРАНЕНИЕМ ---
+        // --- АВТОСОХРАНЕНИЕ ПРЕДЛОЖКИ ---
         const pTitle = document.getElementById('prop-title');
         const pText = document.getElementById('prop-text');
-
         [pTitle, pText].forEach(el => {
             el.oninput = () => localStorage.setItem(`draft_${el.id}`, el.value);
             el.value = localStorage.getItem(`draft_${el.id}`) || '';
         });
 
         async function sendProp() {
-            if (!user) return alertMe("ЗАРЕГИСТРИРУЙТЕСЬ");
-            if (!pTitle.value || !pText.value) return alertMe("ПУСТЫЕ ПОЛЯ");
+            if (!user) return alert("ЗАРЕГИСТРИРУЙТЕСЬ ДЛЯ ОТПРАВКИ");
+            if (!pTitle.value || !pText.value) return alert("ЗАПОЛНИТЕ ПОЛЯ");
 
             const { error } = await sb.from('suggestions').insert([{ 
-                title: pTitle.value, 
-                content: pText.value, 
-                author_email: user.email 
+                title: pTitle.value, content: pText.value, author_email: user.email 
             }]);
 
             if (!error) {
-                alertMe("ОТПРАВЛЕНО В ТИПОГРАФИЮ");
+                alert("ОТПРАВЛЕНО В РЕДАКЦИЮ");
                 pTitle.value = ''; pText.value = '';
-                localStorage.removeItem('draft_prop-title');
-                localStorage.removeItem('draft_prop-text');
+                localStorage.removeItem('draft_prop-title'); localStorage.removeItem('draft_prop-text');
             }
         }
 
         // --- СТАРТ ---
         document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('btn-login').onclick = login;
+            document.getElementById('btn-login').onclick = () => { if(!isVerified) showGuard(); else sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); };
             document.getElementById('btn-logout').onclick = () => { sb.auth.signOut(); location.reload(); };
             document.getElementById('btn-send').onclick = sendProp;
             
@@ -231,10 +221,9 @@
                 user = data.user;
                 document.getElementById('unauth-view').style.display = 'none';
                 document.getElementById('auth-view').style.display = 'block';
-                document.getElementById('user-email').innerText = `ШТАТНЫЙ СОТРУДНИК: ${user.email.toUpperCase()}`;
+                document.getElementById('user-email').innerText = user.email.toUpperCase();
             } else {
-                // Капча для гостей каждые 5 минут
-                setInterval(() => { if(!user && !runCaptcha("КОНТРОЛЬ ПОСЕЩЕНИЯ")) location.reload(); }, 300000);
+                showGuard(); // Показываем капчу сразу для гостей
             }
             loadNews();
         });
