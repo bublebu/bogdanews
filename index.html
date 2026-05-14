@@ -13,19 +13,16 @@
         :root { --bg: #f4f1ea; --dark: #1a1a1a; --red: #d30000; }
         body { background: var(--bg); color: var(--dark); font-family: 'Georgia', serif; margin: 0; padding: 0; }
         
-        /* ШУМ ГАЗЕТЫ */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://www.transparenttextures.com/patterns/stardust.png');
             opacity: 0.12; pointer-events: none; z-index: 10000;
         }
 
-        /* БЕГУЩАЯ СТРОКА */
         .ticker-wrap { background: #000; color: #fff; padding: 5px 0; overflow: hidden; font-family: 'Roboto Mono'; font-size: 0.75rem; }
         .ticker { display: inline-block; white-space: nowrap; animation: ticker 30s linear infinite; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* ИНТЕРФЕЙС */
         header { border-bottom: 5px double #000; max-width: 1200px; margin: 0 auto; padding: 20px; text-align: center; }
         .site-title { font-family: 'Playfair Display', serif; font-size: 5rem; text-transform: uppercase; margin: 0; line-height: 0.8; }
         
@@ -38,10 +35,9 @@
         .input-style { width: 100%; border: 1px solid #000; padding: 8px; font-family: 'Roboto Mono'; margin-bottom: 8px; box-sizing: border-box; }
         
         .btn-main { width: 100%; padding: 12px; background: #000; color: #fff; border: none; font-family: 'Roboto Mono'; font-weight: bold; cursor: pointer; }
-        .btn-main:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-main:disabled { background: #ccc !important; cursor: not-allowed; color: #666 !important; }
         .btn-main:hover:not(:disabled) { background: var(--red); }
 
-        /* МОДАЛКА КАПЧИ */
         #gate { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:20000; display:none; justify-content:center; align-items:center; }
 
         @media print { .no-print { display: none !important; } }
@@ -53,10 +49,22 @@
 <div id="gate" class="no-print">
     <div style="background:#fff; padding:30px; border:4px solid #000; text-align:center; box-shadow: 10px 10px 0 var(--red);">
         <h2 style="font-family:'Playfair Display';">ДОСТУП ОГРАНИЧЕН</h2>
+        <!-- Кнопка разблокируется через функцию verifyOk -->
         <div class="cf-turnstile" data-sitekey="0x4AAAAAADPQ_3U1o1hqP5Fj" data-callback="verifyOk"></div>
         <button class="btn-main" id="gate-btn" disabled style="margin-top:15px;">ПОДТВЕРДИТЬ И ВХОДИТЬ</button>
     </div>
 </div>
+
+<script>
+    // ФУНКЦИЯ ДОЛЖНА БЫТЬ ВНЕ МОДУЛЯ ДЛЯ CLOUDFLARE
+    window.verifyOk = function(token) {
+        const btn = document.getElementById('gate-btn');
+        if (btn) {
+            btn.disabled = false;
+            btn.style.background = "#d30000"; // Делаем красной для наглядности
+        }
+    };
+</script>
 
 <div class="ticker-wrap no-print">
     <div class="ticker">+++ BOGDANEWS v1.21.1 +++ СЕРВЕР SUPABASE ПОДКЛЮЧЕН +++ CLOUDFLARE TURNSTILE АКТИВЕН +++ ОЖИДАНИЕ НОВЫХ СТАТЕЙ +++</div>
@@ -103,51 +111,41 @@
     const S_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    let isHuman = false;
-
-    // КАПЧА
-    window.verifyOk = () => {
-        isHuman = true;
-        document.getElementById('gate-btn').disabled = false;
-    };
-
+    // ЗАКРЫТИЕ МОДАЛКИ
     document.getElementById('gate-btn').onclick = () => {
         document.getElementById('gate').style.display = 'none';
     };
 
     // ВХОД
     async function startLogin() {
-        if (!isHuman) {
-            document.getElementById('gate').style.display = 'flex';
-            return;
-        }
-        
         const { error } = await sb.auth.signInWithOAuth({
             provider: 'google',
-            options: { 
-                // ВАЖНО: GitHub Pages требует полный путь для редиректа
-                redirectTo: 'https://bublebu.github.io/bogdanews/' 
-            }
+            options: { redirectTo: 'https://bublebu.github.io/bogdanews/' }
         });
         if (error) alert(error.message);
     }
 
-    // НОВОСТИ
+    // НОВОСТИ С ДАТОЙ
     async function getNews() {
         const { data } = await sb.from('news').select('*').order('id', { ascending: false });
         const feed = document.getElementById('feed');
         if (!data) return;
-        feed.innerHTML = data.map(n => `
-            <article class="news-card">
-                <button class="btn-print no-print" onclick="window.print()">ПЕЧАТЬ</button>
-                <h2 style="font-family:'Playfair Display'; font-size:2.5rem; margin:10px 0;">${n.title}</h2>
-                <p style="line-height:1.6; font-size:1.1rem;">${n.content}</p>
-                <div style="font-family:'Roboto Mono'; font-size:0.7rem; color:#666;">АРХИВ №${n.id} | 👍 ${n.likes || 0}</div>
-            </article>
-        `).join('');
+        feed.innerHTML = data.map(n => {
+            const newsDate = n.created_at ? new Date(n.created_at).toLocaleDateString('ru-RU') : 'БЕЗ ДАТЫ';
+            return `
+                <article class="news-card">
+                    <button class="btn-print no-print" onclick="window.print()">ПЕЧАТЬ</button>
+                    <div style="font-family:'Roboto Mono'; font-size:0.7rem; color:#666; margin-bottom:5px;">
+                        ОПУБЛИКОВАНО: ${newsDate} | АРХИВ №${n.id}
+                    </div>
+                    <h2 style="font-family:'Playfair Display'; font-size:2.5rem; margin:0 0 10px 0;">${n.title}</h2>
+                    <p style="line-height:1.6; font-size:1.1rem; margin-bottom:10px;">${n.content}</p>
+                    <div style="font-family:'Roboto Mono'; font-size:0.7rem;">👍 ${n.likes || 0}</div>
+                </article>
+            `;
+        }).join('');
     }
 
-    // ИНИЦИАЛИЗАЦИЯ
     document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('date').innerText = new Date().toLocaleDateString('ru-RU').toUpperCase();
         document.getElementById('login-btn').onclick = startLogin;
@@ -168,8 +166,10 @@
             document.getElementById('user-status').innerText = `СОТРУДНИК: ${user.email.split('@')[0].toUpperCase()}`;
             document.getElementById('user-status').style.color = "green";
         } else {
-            // Если не залогинен — показываем капчу через 2 секунды
-            setTimeout(() => { if (!isHuman) document.getElementById('gate').style.display = 'flex'; }, 2000);
+            setTimeout(() => { 
+                const gate = document.getElementById('gate');
+                if (gate) gate.style.display = 'flex'; 
+            }, 1500);
         }
         getNews();
     });
