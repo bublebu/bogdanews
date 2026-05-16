@@ -1,407 +1,939 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Официальный портал BOGDANEWS. Самые свежие, независимые и актуальные новости каждый день.">
-    <title>BOGDANEWS | Официальное независимое издание</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#111111" />
+<meta name="description" content="BOGDANEWS — независимое цифровое издание." />
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="BOGDANEWS | Официальное издание">
-    <meta property="og:description" content="Самые свежие и независимые новости. Читайте официальный портал BOGDANEWS.">
-    <meta property="og:url" content="https://bublebu.github.io/bogdanews/">
-    <meta property="og:image" content="https://bublebu.github.io/bogdanews/favicon.png">
+<title>BOGDANEWS</title>
 
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
-    
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<meta property="og:title" content="BOGDANEWS" />
+<meta property="og:description" content="Независимое цифровое издание" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://bublebu.github.io/bogdanews/" />
+<meta property="og:image" content="favicon.png" />
 
-    <style>
-        :root { 
-            --bg: #fcfbf8; 
-            --dark: #121212; 
-            --red: #c8102e; 
-            --gray: #5a5a5a;
-            --border: #222;
-            --green: #2e7d32;
-        }
-        
-        body { 
-            background: var(--bg); 
-            color: var(--dark); 
-            font-family: 'Georgia', serif; 
-            margin: 0; 
-            padding: 0; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.15; pointer-events: none; z-index: 10000;
-        }
+<link rel="icon" href="favicon.png" />
 
-        ::selection { background: var(--red); color: #fff; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 
-        .ticker-wrap { background: var(--dark); color: #fff; padding: 8px 0; overflow: hidden; font-family: 'Roboto Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
-        .ticker { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; }
-        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
-        header { max-width: 1200px; margin: 0 auto; padding: 40px 20px 20px; text-align: center; width: 100%; box-sizing: border-box; }
-        .site-title { font-family: 'Playfair Display', serif; font-size: clamp(3.5rem, 8vw, 6.5rem); text-transform: uppercase; margin: 0; line-height: 0.85; letter-spacing: -2px; color: var(--dark); }
-        
-        .header-meta { font-family: 'Roboto Mono', monospace; border-top: 1px solid var(--border); border-bottom: 4px double var(--border); margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding: 12px 0; font-weight: 500; text-transform: uppercase; }
-        .age-limit { background: var(--red); color: white; padding: 3px 8px; border-radius: 2px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; }
+<style>
+:root{
+    --bg:#050505;
+    --card:rgba(20,20,20,.78);
+    --border:rgba(255,255,255,.08);
+    --text:#f7f7f7;
+    --muted:#8d8d8d;
+    --accent:#ff2f6d;
+    --accent2:#7c4dff;
+    --green:#00d084;
+    --glass:blur(18px);
+}
 
-        main { flex: 1; max-width: 1200px; margin: 40px auto; display: grid; grid-template-columns: 1fr 3fr 1.2fr; gap: 40px; padding: 0 20px; width: 100%; box-sizing: border-box; }
-        
-        .news-card { 
-            background: #fff; border: 1px solid #e0e0e0; padding: 30px; margin-bottom: 35px; position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .news-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); border-color: #d0d0d0; }
-        
-        .btn-print { position: absolute; right: 30px; top: 30px; background: transparent; color: var(--gray); border: 1px solid var(--gray); font-family: 'Roboto Mono', monospace; font-size: 0.65rem; padding: 6px 12px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
-        .btn-print:hover { background: var(--dark); color: #fff; border-color: var(--dark); }
-        
-        .news-meta { font-family: 'Roboto Mono', monospace; font-size: 0.75rem; color: var(--gray); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee; padding-bottom: 10px; display: inline-block; }
-        .news-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin: 0 0 15px 0; line-height: 1.15; color: var(--dark); }
-        .news-content { line-height: 1.8; font-size: 1.15rem; margin-bottom: 25px; color: #333; }
-        
-        /* Блок интерактивного голосования */
-        .vote-wrap { display: flex; gap: 12px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
-        .vote-btn { 
-            background: #fff; border: 1px solid #ccc; padding: 8px 16px; 
-            font-family: 'Roboto Mono', monospace; font-size: 0.85rem; cursor: pointer; 
-            transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; font-weight: 500;
-        }
-        .vote-btn:hover { background: #f5f5f5; border-color: var(--dark); }
-        
-        /* Стили активных кнопок */
-        .vote-btn.active-like { background: #e8f5e9; border-color: var(--green); color: var(--green); font-weight: 700; box-shadow: inset 3px 0 0 var(--green); }
-        .vote-btn.active-dislike { background: #ffebee; border-color: var(--red); color: var(--red); font-weight: 700; box-shadow: inset 3px 0 0 var(--red); }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-        .sidebar-box { background: #fff; border: 1px solid var(--border); padding: 25px; box-shadow: 6px 6px 0 var(--border); margin-bottom: 30px; transition: all 0.2s ease; }
-        .sidebar-box:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--red); border-color: var(--red); }
-        .sidebar-title { margin: 0 0 20px 0; font-size: 1.1rem; text-transform: uppercase; border-bottom: 2px solid var(--border); padding-bottom: 10px; font-family: 'Playfair Display', serif; font-weight: 900; letter-spacing: 1px; }
-        
-        .input-style { width: 100%; border: 1px solid #ccc; padding: 12px; font-family: 'Roboto Mono', monospace; margin-bottom: 15px; box-sizing: border-box; font-size: 0.9rem; background: #fafafa; transition: all 0.2s; }
-        .input-style:focus { outline: none; border-color: var(--red); background: #fff; box-shadow: inset 4px 0 0 var(--red); }
-        
-        .btn-main { width: 100%; padding: 14px; background: var(--dark); color: #fff; border: none; font-family: 'Roboto Mono', monospace; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; letter-spacing: 1px; }
-        .btn-main:disabled { background: #ccc !important; cursor: not-allowed; color: #666 !important; }
-        .btn-main:hover:not(:disabled) { background: var(--red); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(200, 16, 46, 0.3); }
+html{
+    scroll-behavior:smooth;
+}
 
-        footer { background: var(--dark); color: #aaa; padding: 50px 20px; margin-top: 60px; font-family: 'Roboto Mono', monospace; font-size: 0.75rem; line-height: 1.7; border-top: 5px solid var(--red); }
-        .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; text-align: justify; }
-        .legal-links { display: flex; gap: 25px; flex-wrap: wrap; margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
-        .legal-links a { color: #fff; text-decoration: none; position: relative; }
-        .legal-links a::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -2px; left: 0; background-color: var(--red); transition: width 0.3s ease; }
-        .legal-links a:hover::after { width: 100%; }
+body{
+    background:
+        radial-gradient(circle at top left, rgba(124,77,255,.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(255,47,109,.16), transparent 30%),
+        linear-gradient(to bottom, #070707, #0d0d0d);
+    color:var(--text);
+    font-family:Inter,sans-serif;
+    overflow-x:hidden;
+    min-height:100vh;
+}
 
-        #cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid #ddd; padding: 20px; box-sizing: border-box; display: none; justify-content: space-between; align-items: center; z-index: 15000; font-family: 'Roboto Mono', monospace; font-size: 0.85rem; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
-        .cookie-btn { background: var(--red); color: #fff; border: none; padding: 12px 25px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-family: 'Roboto Mono', monospace; transition: 0.2s; }
-        .cookie-btn:hover { background: var(--dark); }
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:22px 22px;
+    opacity:.35;
+    pointer-events:none;
+}
 
-        #gate { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(18, 18, 18, 0.98); z-index:20000; display:none; justify-content:center; align-items:center; backdrop-filter: blur(5px); }
-        .gate-box { background:#fff; padding:50px; border:1px solid var(--border); text-align:center; box-shadow: 15px 15px 0 var(--red); max-width: 450px; width: 90%; }
+::-webkit-scrollbar{
+    width:10px;
+}
 
-        @media print { .no-print { display: none !important; } body::before { display: none; } main { display: block; background: #fff; } .news-card { box-shadow: none; border: none; border-bottom: 1px solid #000; } }
-        @media (max-width: 1000px) { main { grid-template-columns: 1fr; } .sidebar-box { box-shadow: 4px 4px 0 var(--border); } .sidebar-box:hover { box-shadow: 6px 6px 0 var(--red); } #cookie-banner { flex-direction: column; gap: 15px; text-align: center; } }
-    </style>
+::-webkit-scrollbar-thumb{
+    background:linear-gradient(var(--accent), var(--accent2));
+    border-radius:20px;
+}
+
+#loader{
+    position:fixed;
+    inset:0;
+    background:#000;
+    z-index:999999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:20px;
+}
+
+.loader-logo{
+    font-size:clamp(3rem,8vw,6rem);
+    font-weight:900;
+    font-family:'Playfair Display';
+    background:linear-gradient(90deg,#fff,var(--accent));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:pulse 1.6s infinite;
+}
+
+.loader-sub{
+    color:#bbb;
+    letter-spacing:5px;
+    font-size:.8rem;
+}
+
+@keyframes pulse{
+    0%{opacity:.4;transform:scale(.98)}
+    50%{opacity:1;transform:scale(1)}
+    100%{opacity:.4;transform:scale(.98)}
+}
+
+.topbar{
+    border-bottom:1px solid var(--border);
+    background:rgba(0,0,0,.65);
+    backdrop-filter:var(--glass);
+    overflow:hidden;
+    position:sticky;
+    top:0;
+    z-index:500;
+}
+
+.ticker{
+    white-space:nowrap;
+    display:inline-block;
+    padding:14px 0;
+    animation:ticker 30s linear infinite;
+    font-size:.82rem;
+    letter-spacing:3px;
+    font-weight:700;
+}
+
+@keyframes ticker{
+    from{transform:translateX(100%)}
+    to{transform:translateX(-100%)}
+}
+
+header{
+    max-width:1450px;
+    margin:auto;
+    padding:60px 24px 30px;
+}
+
+.hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
+    gap:30px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.03);
+    backdrop-filter:var(--glass);
+    border-radius:34px;
+    padding:40px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.logo{
+    font-family:'Playfair Display';
+    font-size:clamp(3.4rem,10vw,7rem);
+    line-height:.9;
+    background:linear-gradient(90deg,#fff,#ff8fab);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.hero-right{
+    text-align:right;
+}
+
+.hero-right p{
+    margin-top:10px;
+    color:var(--muted);
+    letter-spacing:2px;
+}
+
+.layout{
+    max-width:1450px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:320px 1fr;
+    gap:28px;
+    padding:30px 24px 120px;
+}
+
+.sidebar{
+    position:sticky;
+    top:90px;
+    height:fit-content;
+}
+
+.panel{
+    background:var(--card);
+    backdrop-filter:var(--glass);
+    border:1px solid var(--border);
+    border-radius:28px;
+    padding:24px;
+    margin-bottom:20px;
+    box-shadow:0 10px 40px rgba(0,0,0,.25);
+}
+
+.panel h3{
+    margin-bottom:20px;
+    font-size:.95rem;
+    letter-spacing:2px;
+}
+
+.status{
+    color:var(--green);
+    font-weight:800;
+}
+
+input,textarea{
+    width:100%;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);
+    color:#fff;
+    border-radius:18px;
+    padding:15px;
+    margin-bottom:14px;
+    font-family:Inter;
+    transition:.2s;
+}
+
+input:focus,textarea:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px rgba(255,47,109,.15);
+}
+
+textarea{
+    min-height:170px;
+    resize:vertical;
+}
+
+button{
+    width:100%;
+    border:none;
+    cursor:pointer;
+    border-radius:18px;
+    padding:15px;
+    font-weight:800;
+    transition:.22s;
+}
+
+.btn-main{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;
+    box-shadow:0 10px 30px rgba(255,47,109,.25);
+}
+
+.btn-main:hover{
+    transform:translateY(-3px) scale(1.01);
+}
+
+.btn-secondary{
+    background:#232323;
+    color:#fff;
+    margin-top:10px;
+}
+
+.feed{
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+}
+
+.card{
+    background:var(--card);
+    backdrop-filter:var(--glass);
+    border:1px solid var(--border);
+    border-radius:34px;
+    overflow:hidden;
+    animation:fadeUp .45s ease;
+    box-shadow:0 15px 50px rgba(0,0,0,.28);
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    transition:.25s;
+}
+
+@keyframes fadeUp{
+    from{opacity:0;transform:translateY(25px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+.card-top{
+    padding:22px 30px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.meta{
+    color:var(--muted);
+    font-size:.82rem;
+    letter-spacing:1px;
+}
+
+.card-body{
+    padding:36px 30px;
+}
+
+.card-title{
+    font-family:'Playfair Display';
+    font-size:clamp(2.2rem,4vw,3.8rem);
+    margin-bottom:22px;
+    line-height:1;
+}
+
+.card-text{
+    color:#dfdfdf;
+    font-size:1.08rem;
+    line-height:1.95;
+    white-space:pre-wrap;
+}
+
+.card-actions{
+    display:flex;
+    gap:12px;
+    margin-top:32px;
+    flex-wrap:wrap;
+}
+
+.vote-btn,.print-btn{
+    width:auto;
+    padding:13px 20px;
+    border-radius:16px;
+    background:#111;
+    border:1px solid var(--border);
+    color:#fff;
+}
+
+.vote-btn:hover,.print-btn:hover{
+    border-color:var(--accent);
+    transform:translateY(-2px);
+}
+
+.vote-active-like{
+    background:rgba(0,208,132,.15);
+    border-color:var(--green);
+}
+
+.vote-active-dislike{
+    background:rgba(255,47,109,.15);
+    border-color:var(--accent);
+}
+
+.empty{
+    text-align:center;
+    padding:120px 20px;
+    color:var(--muted);
+    font-size:1.1rem;
+}
+
+footer{
+    border-top:1px solid var(--border);
+    padding:60px 20px;
+    text-align:center;
+    color:var(--muted);
+    background:rgba(255,255,255,.02);
+}
+
+#gate{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.92);
+    backdrop-filter:blur(12px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+}
+
+.gate-box{
+    background:rgba(18,18,18,.9);
+    border:1px solid var(--border);
+    border-radius:34px;
+    padding:45px;
+    width:min(95%,520px);
+    text-align:center;
+    box-shadow:0 20px 70px rgba(0,0,0,.45);
+}
+
+.gate-title{
+    font-size:2.3rem;
+    margin-bottom:20px;
+    font-family:'Playfair Display';
+}
+
+.gate-text{
+    color:var(--muted);
+    margin-bottom:28px;
+    line-height:1.7;
+}
+
+.cookie{
+    position:fixed;
+    left:20px;
+    right:20px;
+    bottom:20px;
+    background:rgba(18,18,18,.9);
+    border:1px solid var(--border);
+    border-radius:26px;
+    padding:20px;
+    display:none;
+    z-index:999;
+    backdrop-filter:var(--glass);
+}
+
+.cookie-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.cookie p{
+    color:#d0d0d0;
+    line-height:1.6;
+}
+
+@media(max-width:980px){
+    .layout{
+        grid-template-columns:1fr;
+    }
+
+    .sidebar{
+        position:relative;
+        top:0;
+    }
+
+    .hero{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .hero-right{
+        text-align:left;
+    }
+}
+
+@media(max-width:650px){
+
+    .card-body{
+        padding:24px 20px;
+    }
+
+    .card-top{
+        padding:18px 20px;
+    }
+
+    .hero{
+        padding:28px;
+    }
+
+    .card-title{
+        font-size:2rem;
+    }
+
+    .cookie-wrap{
+        flex-direction:column;
+    }
+}
+</style>
 </head>
 <body>
 
-<div id="gate" class="no-print">
-    <div class="gate-box">
-        <h2 style="font-family:'Playfair Display'; margin-top:0; font-size: 2rem;">СИСТЕМА ДОСТУПА</h2>
-        <p style="font-family:'Roboto Mono'; font-size:0.85rem; color:var(--gray); margin-bottom:30px; line-height: 1.5;">Ожидание защищенного соединения.<br>Подтвердите статус для входа в систему.</p>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADPQ_3U1o1hqP5Fj" data-callback="verifyOk" style="display: flex; justify-content: center;"></div>
-        <button class="btn-main" id="gate-btn" disabled style="margin-top:30px;">ПРОДОЛЖИТЬ</button>
-    </div>
+<div id="loader">
+    <div class="loader-logo">BOGDANEWS</div>
+    <div class="loader-sub">DIGITAL EDITION SYSTEM</div>
 </div>
 
-<script>
-    window.verifyOk = function(token) {
-        const btn = document.getElementById('gate-btn');
-        if (btn) btn.disabled = false;
-    };
-</script>
-
-<div class="ticker-wrap no-print">
-    <div class="ticker">+++ BOGDANEWS v2.0 +++ ОФИЦИАЛЬНЫЙ ИСТОЧНИК +++ СИСТЕМЫ В НОРМЕ +++ БЕЗОПАСНОЕ СОЕДИНЕНИЕ УСТАНОВЛЕНО +++ СЛЕДИТЕ ЗА ОБНОВЛЕНИЯМИ +++</div>
+<div class="topbar">
+    <div class="ticker" id="ticker">
+        +++ BOGDANEWS ONLINE +++ SECURE CONNECTION ACTIVE +++ DIGITAL ARCHIVE READY +++
+    </div>
 </div>
 
 <header>
-    <h1 class="site-title">BogdaNews</h1>
-    <div class="header-meta">
-        <span id="date">...</span>
-        <span style="letter-spacing: 2px;">Ежедневное Издание</span>
-        <span class="age-limit">18+</span>
+    <div class="hero">
+        <div>
+            <h1 class="logo">BogdaNews</h1>
+        </div>
+
+        <div class="hero-right">
+            <div id="date"></div>
+            <p>НЕЗАВИСИМОЕ ЦИФРОВОЕ ИЗДАНИЕ</p>
+        </div>
     </div>
 </header>
 
-<main>
-    <aside class="no-print">
-        <div class="sidebar-box">
-            <h3 class="sidebar-title">Терминал</h3>
-            <p id="user-status" style="font-size:0.85rem; color:var(--red); font-family: 'Roboto Mono', monospace; font-weight: 700; margin: 0;">ОЖИДАНИЕ АВТОРИЗАЦИИ</p>
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="panel">
+            <h3>СИСТЕМА</h3>
+            <div id="status" class="status">OFFLINE</div>
         </div>
+
+        <div class="panel" id="auth-panel">
+            <h3>АВТОРИЗАЦИЯ</h3>
+
+            <button class="btn-main" id="loginBtn">
+                ВОЙТИ ЧЕРЕЗ GOOGLE
+            </button>
+        </div>
+
+        <div class="panel" id="editor-panel" style="display:none">
+            <h3>НОВЫЙ МАТЕРИАЛ</h3>
+
+            <input id="titleInput" placeholder="ЗАГОЛОВОК" maxlength="120" />
+
+            <textarea id="contentInput" placeholder="ТЕКСТ СТАТЬИ"></textarea>
+
+            <button class="btn-main" id="publishBtn">
+                ОТПРАВИТЬ
+            </button>
+
+            <button class="btn-secondary" id="logoutBtn">
+                ВЫЙТИ
+            </button>
+        </div>
+
     </aside>
 
-    <section id="feed">
-        <div style="text-align:center; font-family:'Roboto Mono'; padding: 60px; color: var(--gray); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
-            Установка связи с базой данных...
-        </div>
-    </section>
+    <main class="feed" id="feed">
+        <div class="empty">ЗАГРУЗКА ЛЕНТЫ...</div>
+    </main>
+</div>
 
-    <aside class="no-print">
-        <div class="sidebar-box" id="auth-section">
-            <h3 class="sidebar-title">Сотрудникам</h3>
-            <p style="font-family:'Roboto Mono'; font-size:0.8rem; margin-bottom:20px; color: var(--gray); line-height: 1.5;">Служебный вход для авторов и верифицированных лиц.</p>
-            <button class="btn-main" id="login-btn">GOOGLE SSO</button>
-        </div>
-        
-        <div class="sidebar-box" id="prop-section" style="display:none;">
-            <h3 class="sidebar-title">Отправить в печать</h3>
-            <p style="font-family:'Roboto Mono'; font-size:0.75rem; color:var(--gray); margin-bottom:15px; line-height: 1.4;">Все материалы проходят строгую модерацию редакцией.</p>
-            <input type="text" id="p-title" class="input-style" placeholder="ЗАГОЛОВОК СТАТЬИ">
-            <textarea id="p-text" class="input-style" style="height:140px; resize:vertical;" placeholder="Текст материала..."></textarea>
-            <button class="btn-main" id="p-send">ОТПРАВИТЬ МАТЕРИАЛ</button>
-            <button class="btn-main" id="logout-btn" style="margin-top:15px; background:var(--gray);">ЗАВЕРШИТЬ СЕАНС</button>
-        </div>
-    </aside>
-</main>
-
-<footer class="no-print">
-    <div class="footer-content">
-        <div class="legal-links">
-            <a href="#">Пользовательское соглашение</a>
-            <a href="#">Политика конфиденциальности</a>
-            <a href="#">Контакты редакции</a>
-        </div>
-        <div>
-            <strong>ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ (DISCLAIMER):</strong> Все материалы, размещенные на сайте BOGDANEWS, предоставляются исключительно в информационных и развлекательных целях. Администрация сайта не несет ответственности за точность, полноту и актуальность предоставляемой информации. Все персонажи и события вымышлены, любые совпадения случайны.
-        </div>
-        <div>
-            &copy; <span id="current-year"></span> BOGDANEWS. Все права защищены. Возрастная категория: 18+.
-        </div>
-    </div>
+<footer>
+    © 2026 BOGDANEWS — ALL RIGHTS RESERVED
 </footer>
 
-<div id="cookie-banner" class="no-print">
-    <div style="max-width: 800px; line-height: 1.5;">
-        Продолжая использовать сайт BOGDANEWS, вы даете согласие на обработку файлов <b>cookie</b> в соответствии с нашей <a href="#" style="color:var(--red); font-weight: bold; text-decoration: none;">Политикой конфиденциальности</a>.
+<div id="gate">
+    <div class="gate-box">
+        <div class="gate-title">SECURE ACCESS</div>
+
+        <div class="gate-text">
+            Подтвердите соединение для доступа к системе.
+        </div>
+
+        <div class="cf-turnstile"
+            data-sitekey="0x4AAAAAADPQ_3U1o1hqP5Fj"
+            data-callback="turnstileOk">
+        </div>
+
+        <button class="btn-main" id="gateBtn" disabled style="margin-top:20px">
+            ПРОДОЛЖИТЬ
+        </button>
     </div>
-    <button class="cookie-btn" id="accept-cookie">ПРИНЯТЬ И ПРОДОЛЖИТЬ</button>
+</div>
+
+<div class="cookie" id="cookieBanner">
+    <div class="cookie-wrap">
+        <p>
+            Продолжая использование сайта, вы соглашаетесь с обработкой cookie.
+        </p>
+
+        <button class="btn-main" id="cookieAccept">
+            ПРИНЯТЬ
+        </button>
+    </div>
 </div>
 
 <script type="module">
-    const S_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
-    const S_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
-    const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    // Глобальные переменные состояния приложения
-    let currentNews = [];
-    let currentUser = null;
+const SUPABASE_URL = 'https://lqnluvjvghxoiqknfixp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jl6Z1r656UQK7KuVna6gjQ_2JflV-3h';
 
-    // Куки баннер
-    if (!localStorage.getItem('cookieAccepted')) {
-        document.getElementById('cookie-banner').style.display = 'flex';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const feed = document.getElementById('feed');
+const statusText = document.getElementById('status');
+
+let currentUser = null;
+let newsCache = [];
+
+function escapeHTML(str=''){
+    return str
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+}
+
+window.turnstileOk = () => {
+    document.getElementById('gateBtn').disabled = false;
+};
+
+const headlines = [
+    '+++ BOGDANEWS ONLINE +++',
+    '+++ LIVE DIGITAL EDITION +++',
+    '+++ DATABASE CONNECTED +++',
+    '+++ ARCHIVE UPDATED +++',
+    '+++ SECURE SESSION ACTIVE +++'
+];
+
+let tickerIndex = 0;
+
+setInterval(() => {
+    tickerIndex = (tickerIndex + 1) % headlines.length;
+    document.getElementById('ticker').innerText = headlines[tickerIndex];
+}, 4000);
+
+function formatDate(date){
+    return new Date(date).toLocaleString('ru-RU',{
+        day:'2-digit',
+        month:'2-digit',
+        year:'numeric',
+        hour:'2-digit',
+        minute:'2-digit'
+    });
+}
+
+function renderNews(){
+
+    if(newsCache.length === 0){
+        feed.innerHTML = '<div class="empty">НОВОСТИ НЕ НАЙДЕНЫ</div>';
+        return;
     }
-    document.getElementById('accept-cookie').onclick = () => {
-        localStorage.setItem('cookieAccepted', 'true');
-        document.getElementById('cookie-banner').style.display = 'none';
+
+    const storageKey = currentUser ? `votes_${currentUser.id}` : 'guest';
+    const votes = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+    feed.innerHTML = newsCache.map(article => {
+
+        const state = votes[article.id];
+
+        return `
+            <article class="card">
+
+                <div class="card-top">
+                    <div class="meta">
+                        ${formatDate(article.created_at)}
+                    </div>
+
+                    <div class="meta">
+                        ARTICLE ID #${article.id}
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <h2 class="card-title">
+                        ${escapeHTML(article.title)}
+                    </h2>
+
+                    <div class="card-text">
+                        ${escapeHTML(article.content)}
+                    </div>
+
+                    <div class="card-actions">
+
+                        <button
+                            class="vote-btn ${state === 'like' ? 'vote-active-like' : ''}"
+                            onclick="vote(${article.id}, 'like')">
+                            👍 ${article.likes || 0}
+                        </button>
+
+                        <button
+                            class="vote-btn ${state === 'dislike' ? 'vote-active-dislike' : ''}"
+                            onclick="vote(${article.id}, 'dislike')">
+                            👎 ${article.dislikes || 0}
+                        </button>
+
+                        <button
+                            class="print-btn"
+                            onclick="printArticle(${article.id})">
+                            ПЕЧАТЬ
+                        </button>
+
+                    </div>
+
+                </div>
+            </article>
+        `;
+    }).join('');
+}
+
+window.printArticle = function(id){
+
+    const article = newsCache.find(a => a.id === id);
+
+    if(!article) return;
+
+    const win = window.open('', '_blank');
+
+    win.document.write(`
+        <html>
+        <head>
+            <title>${article.title}</title>
+            <style>
+                body{
+                    font-family:Arial;
+                    padding:40px;
+                    line-height:1.7;
+                }
+                h1{
+                    font-size:40px;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>${escapeHTML(article.title)}</h1>
+            <p>${escapeHTML(article.content)}</p>
+        </body>
+        </html>
+    `);
+
+    win.document.close();
+    win.print();
+};
+
+window.vote = async function(id, type){
+
+    if(!currentUser){
+        alert('Требуется авторизация');
+        return;
+    }
+
+    const storageKey = `votes_${currentUser.id}`;
+
+    const votes = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+    const previous = votes[id];
+
+    const article = newsCache.find(n => n.id === id);
+
+    if(!article) return;
+
+    let likes = article.likes || 0;
+    let dislikes = article.dislikes || 0;
+
+    if(type === 'like'){
+
+        if(previous === 'like'){
+            likes--;
+            delete votes[id];
+        }
+        else if(previous === 'dislike'){
+            dislikes--;
+            likes++;
+            votes[id] = 'like';
+        }
+        else{
+            likes++;
+            votes[id] = 'like';
+        }
+    }
+
+    if(type === 'dislike'){
+
+        if(previous === 'dislike'){
+            dislikes--;
+            delete votes[id];
+        }
+        else if(previous === 'like'){
+            likes--;
+            dislikes++;
+            votes[id] = 'dislike';
+        }
+        else{
+            dislikes++;
+            votes[id] = 'dislike';
+        }
+    }
+
+    const { error } = await sb
+        .from('news')
+        .update({
+            likes: Math.max(0, likes),
+            dislikes: Math.max(0, dislikes)
+        })
+        .eq('id', id);
+
+    if(error){
+        alert(error.message);
+        return;
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(votes));
+
+    article.likes = likes;
+    article.dislikes = dislikes;
+
+    renderNews();
+};
+
+async function loadNews(){
+
+    const { data, error } = await sb
+        .from('news')
+        .select('*')
+        .order('id', { ascending:false });
+
+    if(error){
+        feed.innerHTML = '<div class="empty">ОШИБКА ЗАГРУЗКИ</div>';
+        return;
+    }
+
+    newsCache = data || [];
+
+    renderNews();
+}
+
+async function login(){
+
+    await sb.auth.signInWithOAuth({
+        provider:'google',
+        options:{
+            redirectTo:'https://bublebu.github.io/bogdanews/'
+        }
+    });
+}
+
+async function logout(){
+    await sb.auth.signOut();
+    location.reload();
+}
+
+async function publish(){
+
+    const title = document.getElementById('titleInput').value.trim();
+    const content = document.getElementById('contentInput').value.trim();
+
+    if(title.length < 5){
+        alert('Слишком короткий заголовок');
+        return;
+    }
+
+    if(content.length < 20){
+        alert('Текст слишком короткий');
+        return;
+    }
+
+    const { error } = await sb
+        .from('suggestions')
+        .insert([
+            {
+                title,
+                content,
+                author_email: currentUser.email
+            }
+        ]);
+
+    if(error){
+        alert(error.message);
+        return;
+    }
+
+    document.getElementById('titleInput').value = '';
+    document.getElementById('contentInput').value = '';
+
+    alert('Отправлено на модерацию');
+}
+
+function initCookie(){
+
+    if(localStorage.getItem('cookieAccepted')) return;
+
+    document.getElementById('cookieBanner').style.display = 'block';
+
+    document.getElementById('cookieAccept').onclick = () => {
+        localStorage.setItem('cookieAccepted', '1');
+        document.getElementById('cookieBanner').remove();
     };
+}
 
-    document.getElementById('current-year').innerText = new Date().getFullYear();
+async function init(){
 
-    document.getElementById('gate-btn').onclick = () => {
+    document.getElementById('date').innerText =
+        new Date().toLocaleDateString('ru-RU', {
+            weekday:'long',
+            year:'numeric',
+            month:'long',
+            day:'numeric'
+        }).toUpperCase();
+
+    document.getElementById('loginBtn').onclick = login;
+    document.getElementById('logoutBtn').onclick = logout;
+    document.getElementById('publishBtn').onclick = publish;
+
+    document.getElementById('gateBtn').onclick = () => {
         document.getElementById('gate').style.display = 'none';
     };
 
-    async function startLogin() {
-        const { error } = await sb.auth.signInWithOAuth({
-            provider: 'google',
-            options: { redirectTo: 'https://bublebu.github.io/bogdanews/' }
-        });
-        if (error) alert('Системная ошибка авторизации: ' + error.message);
+    const {
+        data:{ user }
+    } = await sb.auth.getUser();
+
+    currentUser = user;
+
+    if(currentUser){
+
+        statusText.innerText = `ONLINE: ${currentUser.email}`;
+
+        document.getElementById('auth-panel').style.display = 'none';
+        document.getElementById('editor-panel').style.display = 'block';
+    }
+    else{
+
+        statusText.innerText = 'GUEST MODE';
+
+        setTimeout(() => {
+            document.getElementById('gate').style.display = 'flex';
+        }, 1200);
     }
 
-    // ДИНАМИЧЕСКИЙ РЕНДЕР ЛЕНТЫ С УЧЕТОМ ГОЛОСОВ
-    function renderNews() {
-        const feed = document.getElementById('feed');
-        if (currentNews.length === 0) {
-            feed.innerHTML = '<div style="text-align:center; font-family:\'Roboto Mono\'; padding:50px;">МАТЕРИАЛЫ ОТСУТСТВУЮТ</div>';
-            return;
-        }
+    await loadNews();
 
-        // Ключ для хранения лайков именно текущего залогиненного юзера
-        const storageKey = currentUser ? `votes_${currentUser.id}` : null;
-        const userVotes = storageKey ? (JSON.parse(localStorage.getItem(storageKey)) || {}) : {};
+    sb.channel('live-news')
+        .on('postgres_changes', {
+            event:'*',
+            schema:'public',
+            table:'news'
+        }, async () => {
+            await loadNews();
+        })
+        .subscribe();
 
-        feed.innerHTML = currentNews.map(n => {
-            const newsDate = n.created_at ? new Date(n.created_at).toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'ДАТА НЕ УСТАНОВЛЕНА';
-            
-            // Проверка, что именно выбрал юзер для конкретной статьи
-            const currentVote = userVotes[n.id]; // может быть 'like', 'dislike' или undefined
-            const likeClass = currentVote === 'like' ? 'active-like' : '';
-            const dislikeClass = currentVote === 'dislike' ? 'active-dislike' : '';
+    initCookie();
 
-            return `
-                <article class="news-card">
-                    <button class="btn-print no-print" onclick="window.print()">Распечатать</button>
-                    <div class="news-meta">
-                        Опубликовано: ${newsDate} &nbsp;|&nbsp; Архивный ID: #${n.id}
-                    </div>
-                    <h2 class="news-title">${n.title}</h2>
-                    <div class="news-content">${n.content}</div>
-                    
-                    <div class="vote-wrap">
-                        <button class="vote-btn ${likeClass}" onclick="window.vote(${n.id}, 'like')">
-                            👍 <span>${n.likes || 0}</span>
-                        </button>
-                        <button class="vote-btn ${dislikeClass}" onclick="window.vote(${n.id}, 'dislike')">
-                            👎 <span>${n.dislikes || 0}</span>
-                        </button>
-                    </div>
-                </article>
-            `;
-        }).join('');
-    }
+    setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+    }, 1200);
+}
 
-    // ЛОГИКА ГОЛОСОВАНИЯ
-    window.vote = async function(newsId, type) {
-        // Требуем авторизацию строго перед действием
-        if (!currentUser) {
-            alert("ДОСТУП ЗАБЛОКИРОВАН: Голосование доступно только авторизованным читателям!");
-            return;
-        }
+init();
 
-        const storageKey = `votes_${currentUser.id}`;
-        let userVotes = JSON.parse(localStorage.getItem(storageKey)) || {};
-        const previousVote = userVotes[newsId];
-
-        // Ищем новость в локальной памяти
-        const article = currentNews.find(n => n.id === newsId);
-        if (!article) return;
-
-        let likesChange = 0;
-        let dislikesChange = 0;
-
-        if (type === 'like') {
-            if (previousVote === 'like') {
-                // Повторный клик по активному лайку — отмена голоса вообще
-                likesChange = -1;
-                delete userVotes[newsId];
-            } else if (previousVote === 'dislike') {
-                // Переключение с дизлайка на лайк (выбор только одного элемента)
-                likesChange = 1;
-                dislikesChange = -1;
-                userVotes[newsId] = 'like';
-            } else {
-                // Голос с нуля
-                likesChange = 1;
-                userVotes[newsId] = 'like';
-            }
-        } else if (type === 'dislike') {
-            if (previousVote === 'dislike') {
-                // Повторный клик по активному дизлайку — отмена
-                dislikesChange = -1;
-                delete userVotes[newsId];
-            } else if (previousVote === 'like') {
-                // Переключение с лайка на дизлайк (выбор только одного элемента)
-                likesChange = -1;
-                dislikesChange = 1;
-                userVotes[newsId] = 'dislike';
-            } else {
-                // Голос с нуля
-                dislikesChange = 1;
-                userVotes[newsId] = 'dislike';
-            }
-        }
-
-        // Считаем финальные цифры для записи
-        const newLikes = Math.max(0, (article.likes || 0) + likesChange);
-        const newDislikes = Math.max(0, (article.dislikes || 0) + dislikesChange);
-
-        // Обновляем данные на сервере Supabase
-        const { error } = await sb.from('news')
-            .update({ likes: newLikes, dislikes: newDislikes })
-            .eq('id', newsId);
-
-        if (error) {
-            alert("Ошибка синхронизации данных: " + error.message);
-            return;
-        }
-
-        // Если сервер принял апдейт — фиксируем изменения локально
-        localStorage.setItem(storageKey, JSON.stringify(userVotes));
-        article.likes = newLikes;
-        article.dislikes = newDislikes;
-        
-        // Перерисовываем интерфейс без перезагрузки всей страницы
-        renderNews();
-    };
-
-    async function getNews() {
-        const { data, error } = await sb.from('news').select('*').order('id', { ascending: false });
-        if (error) {
-            document.getElementById('feed').innerHTML = '<div style="text-align:center; font-family:\'Roboto Mono\'; color:var(--red); padding: 50px;">ОШИБКА БАЗЫ ДАННЫХ</div>';
-            return;
-        }
-        currentNews = data || [];
-        renderNews();
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('date').innerText = new Date().toLocaleDateString('ru-RU', dateOptions).toUpperCase();
-        
-        document.getElementById('login-btn').onclick = startLogin;
-        document.getElementById('logout-btn').onclick = async () => { await sb.auth.signOut(); location.reload(); };
-        
-        document.getElementById('p-send').onclick = async () => {
-            const t = document.getElementById('p-title').value.trim();
-            const c = document.getElementById('p-text').value.trim();
-            if (!t || !c) { alert('ВНИМАНИЕ: Все поля обязательны.'); return; }
-
-            const { error } = await sb.from('suggestions').insert([{ title: t, content: c, author_email: currentUser.email }]);
-            if (!error) { 
-                alert("УСПЕХ: Отправлено на модерацию."); 
-                document.getElementById('p-title').value = ''; 
-                document.getElementById('p-text').value = ''; 
-            } else {
-                alert("СБОЙ ПЕРЕДАЧИ: " + error.message);
-            }
-        };
-
-        // Проверяем сессию пользователя
-        const { data: { user } } = await sb.auth.getUser();
-        currentUser = user;
-
-        if (currentUser) {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('prop-section').style.display = 'block';
-            document.getElementById('user-status').innerText = `ДОСТУП РАЗРЕШЕН: ${currentUser.email.split('@')[0].toUpperCase()}`;
-            document.getElementById('user-status').style.color = "green";
-        } else {
-            setTimeout(() => { 
-                const gate = document.getElementById('gate');
-                if (gate) gate.style.display = 'flex'; 
-            }, 1200);
-        }
-        
-        // Скачиваем статьи только после определения сессии, чтобы правильно подставить классы кнопок
-        getNews();
-    });
 </script>
 </body>
 </html>
