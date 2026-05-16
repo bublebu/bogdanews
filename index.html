@@ -524,32 +524,70 @@ footer{
 
     </aside>
 
-    <section style="max-width:1450px;margin:auto;padding:0 24px 10px;">
+    <nav style="max-width:1450px;margin:0 auto;padding:0 24px 24px;display:flex;gap:14px;flex-wrap:wrap;">
+<button class="btn-main" onclick="showPage('newsPage')" style="width:auto;">НОВОСТИ</button>
+<button class="btn-main" onclick="showPage('legalPage')" style="width:auto;">ЮРИДИЧЕСКАЯ ИНФОРМАЦИЯ</button>
+<button class="btn-main" onclick="showPage('teamPage')" style="width:auto;">КОМАНДА BOGDANEWS</button>
+</nav>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:28px;">
+<div id="newsPage">
+<main class="feed" id="feed">енты, пользовательские сообщения, цифровые интерфейсы, имитации новостны</main>
+</div>
 
-<div class="panel"><h3>ПОЛИТИКА</h3><p style="color:#bdbdbd;line-height:1.7;">Главные политические события, аналитика и цифровые отчеты.</p></div>
+<div id="legalPage" style="display:none;max-width:1450px;margin:auto;padding:20px 24px 80px;">
+<div class="panel">
+<h2 style="font-size:2.4rem;margin-bottom:20px;">ЮРИДИЧЕСКАЯ ИНФОРМАЦИЯ</h2>
+<div style="color:#cfcfcf;line-height:2;font-size:1rem;max-height:75vh;overflow:auto;">
+BOGDANEWS представляет собой цифровую информационно-развлекательную платформу, функционирующую в демонстрационном, художественном, экспериментальном и образовательном формате. Все материалы, публикации, изображения, комментарии, визуальные элементы, пользовательские сообщения, цифровые интерфейсы, имитации новостных материалов, стилизованные публикации, архивные страницы, медиа-компоненты и иные элементы платформы могут содержать субъективные мнения, художественные преувеличения, элементы сатиры, пародии, вымышленные описания, экспериментальные данные или автоматически сгенерированный контент.
+</div>
+</div>
+</div>
 
-<div class="panel"><h3>ТЕХНОЛОГИИ</h3><p style="color:#bdbdbd;line-height:1.7;">ИИ, кибербезопасность, цифровые системы и разработки.</p></div>
+<div id="teamPage" style="display:none;max-width:1450px;margin:auto;padding:20px 24px 80px;">
+<div class="panel">
+<h2 style="font-size:2.4rem;margin-bottom:24px;">КОМАНДА BOGDANEWS</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;">
+<div class="panel"><h3>БОГДАН</h3><p>Главный редактор цифрового издания.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Ведущий разработчик платформы.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Руководитель отдела модерации.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Технический администратор серверной инфраструктуры.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Оператор цифрового архива.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Специалист по цифровой безопасности.</p></div>
+</div>
+</div>
+</div>
 
-<div class="panel"><h3>ПРОИСШЕСТВИЯ</h3><p style="color:#bdbdbd;line-height:1.7;">Оперативные материалы, события и архивные расследования.</p></div>
+<section style="max-width:1450px;margin:auto;padding:20px 24px 80px;">ненты и иные элементы платформы могут содержать субъективные мнения, художественные преувеличения, элементы сатиры, пародии, вымышленные описания, экспериментальные данные или автоматически сгенерированный контент. Администрация платформы не гарантирует абсолютную точность, непрерывность работы сервисов, полноту информации, актуальность материалов либо соответствие публикаций ожиданиям пользователя.
 
-<div class="panel"><h3>ЭКОНОМИКА</h3><p style="color:#bdbdbd;line-height:1.7;">Финансовые обзоры, рынки и цифровые тренды.</p></div>
+Пользователь самостоятельно принимает решение об использовании платформы и соглашается с тем, что администрация, разработчики, редакторы, авторы, технические специалисты, модераторы, партнеры и иные лица, связанные с функционированием проекта BOGDANEWS, не несут ответственности за любые прямые, косвенные, случайные, специальные, предполагаемые или иные последствия, связанные с использованием платформы, интерпретацией информации, пользовательскими публикациями, временной недоступностью сайта, потерей данных, техническими ошибками, действиями третьих лиц, сетевыми ограничениями, региональными блокировками или иными обстоятельствами.
 
-<div class="panel"><h3>БОГДАН TV</h3><p style="color:#bdbdbd;line-height:1.7;">Медиа-раздел, интервью и визуальные материалы.</p></div>
+Любые совпадения имен, организаций, брендов, событий, ситуаций, изображений, должностей или описаний могут быть случайными, художественными либо использоваться исключительно в информационных, критических, сатирических, демонстрационных или описательных целях. Материалы платформы не являются официальными заявлениями государственных органов, финансовыми рекомендациями, медицинскими консультациями, юридическими заключениями, профессиональными советами либо обязательными инструкциями. Пользователь самостоятельно оценивает достоверность любой информации.
 
-<div class="panel"><h3>СЕКРЕТНЫЙ АРХИВ</h3><p style="color:#bdbdbd;line-height:1.7;">Закрытые материалы и цифровой архив платформы.</p></div>
+Продолжая использование платформы, пользователь подтверждает согласие с условиями использования сервиса, обработкой технических данных, локальными правилами своей юрисдикции и принимает, что часть функционала платформы может изменяться, ограничиваться, удаляться либо работать нестабильно без предварительного уведомления.
+</div>
 
 </div>
 
-</section>
-
-<main class="feed" id="feed">
-        <div class="empty">ЗАГРУЗКА ЛЕНТЫ...</div>
-    </main>
 </div>
 
-<section style="max-width:1450px;margin:auto;padding:20px 24px 80px;">
+<div id="teamPage" style="display:none;max-width:1450px;margin:auto;padding:20px 24px 80px;">
+
+<div class="panel">
+<h2 style="font-size:2.4rem;margin-bottom:24px;">КОМАНДА BOGDANEWS</h2>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;">
+
+<div class="panel"><h3>БОГДАН</h3><p>Главный редактор цифрового издания.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Руководитель отдела кибербезопасности.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Ведущий разработчик платформы.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Директор по медиа-контенту.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Архивный аналитик системы публикаций.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Специалист по цифровым расследованиям.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Менеджер международных коммуникаций.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Технический администратор серверной инфраструктуры.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Руководитель отдела модерации.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Координатор визуальных интерфейсов.</p></diconst SUPABASE_KEY = 'sb_publishable_jl6Z1r656UQK7KuVna6gjQ_2JflV-3h';ты.</p></div>
+<div class="panel"><h3>БОГДАН</h3><p>Оператор цифро
 
 <div class="panel" style="margin-bottom:30px;">
     <h2 style="margin-bottom:20px;font-size:2rem;">КОМАНДА РАЗРАБОТКИ</h2>
@@ -825,9 +863,14 @@ window.vote = async function(id, type){
     localStorage.setItem(storageKey, JSON.stringify(votes));
 
     article.likes = likes;
-    article.dislikes = dislikes;
+    article.dislikes = dislikes;window.showPage = function(pageId){
+ document.getElementById('newsPage').style.display='none';
+ document.getElementById('legalPage').style.display='none';
+ document.getElementById('teamPage').style.display='none';
+ document.getElementById(pageId).style.display='block';
+};
 
-    renderNews();
+init();enderNews();
 };
 
 async function loadNews(){
