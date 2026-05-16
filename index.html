@@ -6,7 +6,6 @@
     <meta name="description" content="Официальный портал BOGDANEWS. Самые свежие и независимые новости.">
     <title>BOGDANEWS | Официальное издание</title>
     
-    <!-- Подключение Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
     
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -14,13 +13,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Цветовая палитра и переменные */
         :root { 
             --bg: #fcfbf8; 
             --dark: #121212; 
             --red: #c8102e; 
             --gray: #5a5a5a;
             --border: #222;
+            --green: #2e7d32;
         }
         
         body { 
@@ -35,66 +34,31 @@
             -webkit-font-smoothing: antialiased;
         }
         
-        /* Легкий шум на фоне для газетной текстуры */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://www.transparenttextures.com/patterns/stardust.png');
             opacity: 0.15; pointer-events: none; z-index: 10000;
         }
 
-        /* Выделение текста */
         ::selection { background: var(--red); color: #fff; }
 
-        /* Бегущая строка */
         .ticker-wrap { background: var(--dark); color: #fff; padding: 8px 0; overflow: hidden; font-family: 'Roboto Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
         .ticker { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* Шапка */
         header { max-width: 1200px; margin: 0 auto; padding: 40px 20px 20px; text-align: center; width: 100%; box-sizing: border-box; }
-        .site-title { 
-            font-family: 'Playfair Display', serif; 
-            font-size: clamp(3.5rem, 8vw, 6.5rem); 
-            text-transform: uppercase; 
-            margin: 0; 
-            line-height: 0.85; 
-            letter-spacing: -2px;
-            color: var(--dark);
-        }
+        .site-title { font-family: 'Playfair Display', serif; font-size: clamp(3.5rem, 8vw, 6.5rem); text-transform: uppercase; margin: 0; line-height: 0.85; letter-spacing: -2px; color: var(--dark); }
         
-        .header-meta { 
-            font-family: 'Roboto Mono', monospace; 
-            border-top: 1px solid var(--border); 
-            border-bottom: 4px double var(--border); 
-            margin-top: 25px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            font-size: 0.85rem; 
-            padding: 12px 0; 
-            font-weight: 500; 
-            text-transform: uppercase;
-        }
+        .header-meta { font-family: 'Roboto Mono', monospace; border-top: 1px solid var(--border); border-bottom: 4px double var(--border); margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding: 12px 0; font-weight: 500; text-transform: uppercase; }
         .age-limit { background: var(--red); color: white; padding: 3px 8px; border-radius: 2px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; }
 
-        /* Основной контент */
         main { flex: 1; max-width: 1200px; margin: 40px auto; display: grid; grid-template-columns: 1fr 3fr 1.2fr; gap: 40px; padding: 0 20px; width: 100%; box-sizing: border-box; }
         
-        /* Карточки новостей */
         .news-card { 
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            padding: 30px;
-            margin-bottom: 35px; 
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: #fff; border: 1px solid #e0e0e0; padding: 30px; margin-bottom: 35px; position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .news-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            border-color: #d0d0d0;
-        }
+        .news-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); border-color: #d0d0d0; }
         
         .btn-print { position: absolute; right: 30px; top: 30px; background: transparent; color: var(--gray); border: 1px solid var(--gray); font-family: 'Roboto Mono', monospace; font-size: 0.65rem; padding: 6px 12px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
         .btn-print:hover { background: var(--dark); color: #fff; border-color: var(--dark); }
@@ -102,23 +66,22 @@
         .news-meta { font-family: 'Roboto Mono', monospace; font-size: 0.75rem; color: var(--gray); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee; padding-bottom: 10px; display: inline-block; }
         .news-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin: 0 0 15px 0; line-height: 1.15; color: var(--dark); }
         .news-content { line-height: 1.8; font-size: 1.15rem; margin-bottom: 25px; color: #333; }
-        .news-footer { font-family: 'Roboto Mono', monospace; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-
-        /* Боковые панели */
-        .sidebar-box { 
-            background: #fff; 
-            border: 1px solid var(--border); 
-            padding: 25px; 
-            box-shadow: 6px 6px 0 var(--border); 
-            margin-bottom: 30px; 
-            transition: all 0.2s ease;
-        }
-        .sidebar-box:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0 var(--red);
-            border-color: var(--red);
-        }
         
+        /* Блок интерактивного голосования */
+        .vote-wrap { display: flex; gap: 12px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+        .vote-btn { 
+            background: #fff; border: 1px solid #ccc; padding: 8px 16px; 
+            font-family: 'Roboto Mono', monospace; font-size: 0.85rem; cursor: pointer; 
+            transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; font-weight: 500;
+        }
+        .vote-btn:hover { background: #f5f5f5; border-color: var(--dark); }
+        
+        /* Стили активных кнопок */
+        .vote-btn.active-like { background: #e8f5e9; border-color: var(--green); color: var(--green); font-weight: 700; box-shadow: inset 3px 0 0 var(--green); }
+        .vote-btn.active-dislike { background: #ffebee; border-color: var(--red); color: var(--red); font-weight: 700; box-shadow: inset 3px 0 0 var(--red); }
+
+        .sidebar-box { background: #fff; border: 1px solid var(--border); padding: 25px; box-shadow: 6px 6px 0 var(--border); margin-bottom: 30px; transition: all 0.2s ease; }
+        .sidebar-box:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--red); border-color: var(--red); }
         .sidebar-title { margin: 0 0 20px 0; font-size: 1.1rem; text-transform: uppercase; border-bottom: 2px solid var(--border); padding-bottom: 10px; font-family: 'Playfair Display', serif; font-weight: 900; letter-spacing: 1px; }
         
         .input-style { width: 100%; border: 1px solid #ccc; padding: 12px; font-family: 'Roboto Mono', monospace; margin-bottom: 15px; box-sizing: border-box; font-size: 0.9rem; background: #fafafa; transition: all 0.2s; }
@@ -128,7 +91,6 @@
         .btn-main:disabled { background: #ccc !important; cursor: not-allowed; color: #666 !important; }
         .btn-main:hover:not(:disabled) { background: var(--red); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(200, 16, 46, 0.3); }
 
-        /* Официальный футер */
         footer { background: var(--dark); color: #aaa; padding: 50px 20px; margin-top: 60px; font-family: 'Roboto Mono', monospace; font-size: 0.75rem; line-height: 1.7; border-top: 5px solid var(--red); }
         .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; text-align: justify; }
         .legal-links { display: flex; gap: 25px; flex-wrap: wrap; margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
@@ -136,12 +98,10 @@
         .legal-links a::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -2px; left: 0; background-color: var(--red); transition: width 0.3s ease; }
         .legal-links a:hover::after { width: 100%; }
 
-        /* Плашка согласия Cookie */
         #cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid #ddd; padding: 20px; box-sizing: border-box; display: none; justify-content: space-between; align-items: center; z-index: 15000; font-family: 'Roboto Mono', monospace; font-size: 0.85rem; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
         .cookie-btn { background: var(--red); color: #fff; border: none; padding: 12px 25px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-family: 'Roboto Mono', monospace; transition: 0.2s; }
         .cookie-btn:hover { background: var(--dark); }
 
-        /* Окно проверки Cloudflare (Гейт) */
         #gate { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(18, 18, 18, 0.98); z-index:20000; display:none; justify-content:center; align-items:center; backdrop-filter: blur(5px); }
         .gate-box { background:#fff; padding:50px; border:1px solid var(--border); text-align:center; box-shadow: 15px 15px 0 var(--red); max-width: 450px; width: 90%; }
 
@@ -151,7 +111,6 @@
 </head>
 <body>
 
-<!-- Гейт проверки безопасности -->
 <div id="gate" class="no-print">
     <div class="gate-box">
         <h2 style="font-family:'Playfair Display'; margin-top:0; font-size: 2rem;">СИСТЕМА ДОСТУПА</h2>
@@ -164,18 +123,14 @@
 <script>
     window.verifyOk = function(token) {
         const btn = document.getElementById('gate-btn');
-        if (btn) {
-            btn.disabled = false;
-        }
+        if (btn) btn.disabled = false;
     };
 </script>
 
-<!-- Бегущая строка -->
 <div class="ticker-wrap no-print">
     <div class="ticker">+++ BOGDANEWS v2.0 +++ ОФИЦИАЛЬНЫЙ ИСТОЧНИК +++ СИСТЕМЫ В НОРМЕ +++ БЕЗОПАСНОЕ СОЕДИНЕНИЕ УСТАНОВЛЕНО +++ СЛЕДИТЕ ЗА ОБНОВЛЕНИЯМИ +++</div>
 </div>
 
-<!-- Шапка -->
 <header>
     <h1 class="site-title">BogdaNews</h1>
     <div class="header-meta">
@@ -185,9 +140,7 @@
     </div>
 </header>
 
-<!-- Основной контент -->
 <main>
-    <!-- Левый сайдбар -->
     <aside class="no-print">
         <div class="sidebar-box">
             <h3 class="sidebar-title">Терминал</h3>
@@ -195,14 +148,12 @@
         </div>
     </aside>
 
-    <!-- Лента новостей -->
     <section id="feed">
         <div style="text-align:center; font-family:'Roboto Mono'; padding: 60px; color: var(--gray); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
             Установка связи с базой данных...
         </div>
     </section>
 
-    <!-- Правый сайдбар -->
     <aside class="no-print">
         <div class="sidebar-box" id="auth-section">
             <h3 class="sidebar-title">Сотрудникам</h3>
@@ -221,7 +172,6 @@
     </aside>
 </main>
 
-<!-- Юридический футер -->
 <footer class="no-print">
     <div class="footer-content">
         <div class="legal-links">
@@ -230,18 +180,17 @@
             <a href="#">Контакты редакции</a>
         </div>
         <div>
-            <strong>ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ (DISCLAIMER):</strong> Все материалы, размещенные на сайте BOGDANEWS, предоставляются исключительно в информационных и развлекательных целях. Мнение авторов может не совпадать с позицией редакции. Администрация сайта не несет ответственности за точность, полноту и актуальность предоставляемой информации, а также за любые прямые или косвенные убытки, возникшие в результате использования материалов сайта. Все персонажи и события вымышлены, любые совпадения с реальными людьми случайны. Использование сайта подразумевает полное и безоговорочное согласие с Правилами использования.
+            <strong>ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ (DISCLAIMER):</strong> Все материалы, размещенные на сайте BOGDANEWS, предоставляются исключительно в информационных и развлекательных целях. Администрация сайта не несет ответственности за точность, полноту и актуальность предоставляемой информации. Все персонажи и события вымышлены, любые совпадения случайны.
         </div>
         <div>
-            &copy; <span id="current-year"></span> BOGDANEWS. Все права защищены. Любое копирование материалов допускается только с письменного разрешения редакции и с указанием активной ссылки на источник. Возрастная категория: 18+.
+            &copy; <span id="current-year"></span> BOGDANEWS. Все права защищены. Возрастная категория: 18+.
         </div>
     </div>
 </footer>
 
-<!-- Плашка Cookie -->
 <div id="cookie-banner" class="no-print">
     <div style="max-width: 800px; line-height: 1.5;">
-        Продолжая использовать сайт BOGDANEWS, вы даете согласие на обработку файлов <b>cookie</b> и пользовательских данных в соответствии с нашей <a href="#" style="color:var(--red); font-weight: bold; text-decoration: none;">Политикой конфиденциальности</a>. Это необходимо для корректной работы защитных систем и аналитики.
+        Продолжая использовать сайт BOGDANEWS, вы даете согласие на обработку файлов <b>cookie</b> в соответствии с нашей <a href="#" style="color:var(--red); font-weight: bold; text-decoration: none;">Политикой конфиденциальности</a>.
     </div>
     <button class="cookie-btn" id="accept-cookie">ПРИНЯТЬ И ПРОДОЛЖИТЬ</button>
 </div>
@@ -251,7 +200,11 @@
     const S_KEY = 'sb_publishable_ZKaIa2ygxMrvn6M8urGE1A_1M4PR3jQ';
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    // Логика плашки Cookie
+    // Глобальные переменные состояния приложения
+    let currentNews = [];
+    let currentUser = null;
+
+    // Куки баннер
     if (!localStorage.getItem('cookieAccepted')) {
         document.getElementById('cookie-banner').style.display = 'flex';
     }
@@ -260,15 +213,12 @@
         document.getElementById('cookie-banner').style.display = 'none';
     };
 
-    // Установка текущего года в футер
     document.getElementById('current-year').innerText = new Date().getFullYear();
 
-    // ЗАКРЫТИЕ МОДАЛКИ БЕЗОПАСНОСТИ
     document.getElementById('gate-btn').onclick = () => {
         document.getElementById('gate').style.display = 'none';
     };
 
-    // ВХОД
     async function startLogin() {
         const { error } = await sb.auth.signInWithOAuth({
             provider: 'google',
@@ -277,17 +227,26 @@
         if (error) alert('Системная ошибка авторизации: ' + error.message);
     }
 
-    // НОВОСТИ С ДАТОЙ
-    async function getNews() {
-        const { data, error } = await sb.from('news').select('*').order('id', { ascending: false });
+    // ДИНАМИЧЕСКИЙ РЕНДЕР ЛЕНТЫ С УЧЕТОМ ГОЛОСОВ
+    function renderNews() {
         const feed = document.getElementById('feed');
-        if (error || !data) {
-            feed.innerHTML = '<div style="text-align:center; font-family:\'Roboto Mono\'; color:var(--red); padding: 50px;">ОШИБКА ДОСТУПА К СЕРВЕРУ БАЗЫ ДАННЫХ</div>';
+        if (currentNews.length === 0) {
+            feed.innerHTML = '<div style="text-align:center; font-family:\'Roboto Mono\'; padding:50px;">МАТЕРИАЛЫ ОТСУТСТВУЮТ</div>';
             return;
         }
-        
-        feed.innerHTML = data.map(n => {
+
+        // Ключ для хранения лайков именно текущего залогиненного юзера
+        const storageKey = currentUser ? `votes_${currentUser.id}` : null;
+        const userVotes = storageKey ? (JSON.parse(localStorage.getItem(storageKey)) || {}) : {};
+
+        feed.innerHTML = currentNews.map(n => {
             const newsDate = n.created_at ? new Date(n.created_at).toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'ДАТА НЕ УСТАНОВЛЕНА';
+            
+            // Проверка, что именно выбрал юзер для конкретной статьи
+            const currentVote = userVotes[n.id]; // может быть 'like', 'dislike' или undefined
+            const likeClass = currentVote === 'like' ? 'active-like' : '';
+            const dislikeClass = currentVote === 'dislike' ? 'active-dislike' : '';
+
             return `
                 <article class="news-card">
                     <button class="btn-print no-print" onclick="window.print()">Распечатать</button>
@@ -296,12 +255,102 @@
                     </div>
                     <h2 class="news-title">${n.title}</h2>
                     <div class="news-content">${n.content}</div>
-                    <div class="news-footer">
-                        <span style="color:var(--red);">👍</span> Индекс полезности: ${n.likes || 0}
+                    
+                    <div class="vote-wrap">
+                        <button class="vote-btn ${likeClass}" onclick="window.vote(${n.id}, 'like')">
+                            👍 <span>${n.likes || 0}</span>
+                        </button>
+                        <button class="vote-btn ${dislikeClass}" onclick="window.vote(${n.id}, 'dislike')">
+                            👎 <span>${n.dislikes || 0}</span>
+                        </button>
                     </div>
                 </article>
             `;
         }).join('');
+    }
+
+    // ЛОГИКА ГОЛОСОВАНИЯ
+    window.vote = async function(newsId, type) {
+        // Требуем авторизацию строго перед действием
+        if (!currentUser) {
+            alert("ДОСТУП ЗАБЛОКИРОВАН: Голосование доступно только авторизованным читателям!");
+            return;
+        }
+
+        const storageKey = `votes_${currentUser.id}`;
+        let userVotes = JSON.parse(localStorage.getItem(storageKey)) || {};
+        const previousVote = userVotes[newsId];
+
+        // Ищем новость в локальной памяти
+        const article = currentNews.find(n => n.id === newsId);
+        if (!article) return;
+
+        let likesChange = 0;
+        let dislikesChange = 0;
+
+        if (type === 'like') {
+            if (previousVote === 'like') {
+                // Повторный клик по активному лайку — отмена голоса вообще
+                likesChange = -1;
+                delete userVotes[newsId];
+            } else if (previousVote === 'dislike') {
+                // Переключение с дизлайка на лайк (выбор только одного элемента)
+                likesChange = 1;
+                dislikesChange = -1;
+                userVotes[newsId] = 'like';
+            } else {
+                // Голос с нуля
+                likesChange = 1;
+                userVotes[newsId] = 'like';
+            }
+        } else if (type === 'dislike') {
+            if (previousVote === 'dislike') {
+                // Повторный клик по активному дизлайку — отмена
+                dislikesChange = -1;
+                delete userVotes[newsId];
+            } else if (previousVote === 'like') {
+                // Переключение с лайка на дизлайк (выбор только одного элемента)
+                likesChange = -1;
+                dislikesChange = 1;
+                userVotes[newsId] = 'dislike';
+            } else {
+                // Голос с нуля
+                dislikesChange = 1;
+                userVotes[newsId] = 'dislike';
+            }
+        }
+
+        // Считаем финальные цифры для записи
+        const newLikes = Math.max(0, (article.likes || 0) + likesChange);
+        const newDislikes = Math.max(0, (article.dislikes || 0) + dislikesChange);
+
+        // Обновляем данные на сервере Supabase
+        const { error } = await sb.from('news')
+            .update({ likes: newLikes, dislikes: newDislikes })
+            .eq('id', newsId);
+
+        if (error) {
+            alert("Ошибка синхронизации данных: " + error.message);
+            return;
+        }
+
+        // Если сервер принял апдейт — фиксируем изменения локально
+        localStorage.setItem(storageKey, JSON.stringify(userVotes));
+        article.likes = newLikes;
+        article.dislikes = newDislikes;
+        
+        // Перерисовываем интерфейс без перезагрузки всей страницы
+        renderNews();
+    };
+
+    async function getNews() {
+        const { data, error } = await sb.from('news').select('*').order('id', { ascending: false });
+        if (error) {
+            document.getElementById('feed').innerHTML = '<div style="text-align:center; font-family:\'Roboto Mono\'; color:var(--red); padding: 50px;">ОШИБКА БАЗЫ ДАННЫХ</div>';
+            return;
+        }
+        currentNews = data || [];
+        renderNews();
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -314,12 +363,11 @@
         document.getElementById('p-send').onclick = async () => {
             const t = document.getElementById('p-title').value.trim();
             const c = document.getElementById('p-text').value.trim();
-            if (!t || !c) { alert('ВНИМАНИЕ: Все поля обязательны для заполнения.'); return; }
+            if (!t || !c) { alert('ВНИМАНИЕ: Все поля обязательны.'); return; }
 
-            const { data: { user } } = await sb.auth.getUser();
-            const { error } = await sb.from('suggestions').insert([{ title: t, content: c, author_email: user.email }]);
+            const { error } = await sb.from('suggestions').insert([{ title: t, content: c, author_email: currentUser.email }]);
             if (!error) { 
-                alert("УСПЕХ: Материал передан в редакцию."); 
+                alert("УСПЕХ: Отправлено на модерацию."); 
                 document.getElementById('p-title').value = ''; 
                 document.getElementById('p-text').value = ''; 
             } else {
@@ -327,11 +375,14 @@
             }
         };
 
+        // Проверяем сессию пользователя
         const { data: { user } } = await sb.auth.getUser();
-        if (user) {
+        currentUser = user;
+
+        if (currentUser) {
             document.getElementById('auth-section').style.display = 'none';
             document.getElementById('prop-section').style.display = 'block';
-            document.getElementById('user-status').innerText = `ДОСТУП РАЗРЕШЕН: ${user.email.split('@')[0].toUpperCase()}`;
+            document.getElementById('user-status').innerText = `ДОСТУП РАЗРЕШЕН: ${currentUser.email.split('@')[0].toUpperCase()}`;
             document.getElementById('user-status').style.color = "green";
         } else {
             setTimeout(() => { 
@@ -339,6 +390,8 @@
                 if (gate) gate.style.display = 'flex'; 
             }, 1200);
         }
+        
+        // Скачиваем статьи только после определения сессии, чтобы правильно подставить классы кнопок
         getNews();
     });
 </script>
